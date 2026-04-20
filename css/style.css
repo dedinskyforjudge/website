@@ -34,7 +34,7 @@
   --font-body: 'Work Sans', 'Segoe UI', sans-serif;
 
   --max-width: 1100px;
-  --nav-height: 72px;
+  --nav-height: 96px;
 }
 
 /* --- Reset --- */
@@ -70,7 +70,7 @@ a { color: inherit; }
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
-  background: var(--navy);
+  background: var(--white);
   border-bottom: 3px solid var(--red);
 }
 
@@ -92,7 +92,7 @@ a { color: inherit; }
 }
 
 .nav-logo img {
-  height: 44px;
+  height: 75px;
   width: auto;
 }
 
@@ -123,7 +123,7 @@ a { color: inherit; }
 }
 
 .nav-links a {
-  color: rgba(255,255,255,0.8);
+  color: var(--navy);
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
@@ -136,8 +136,8 @@ a { color: inherit; }
 
 .nav-links a:hover,
 .nav-links a.active {
-  color: #fff;
-  background: rgba(255,255,255,0.08);
+  color: var(--navy);
+  background: rgba(27,42,74,0.07);
 }
 
 .nav-links .nav-donate {
@@ -159,7 +159,7 @@ a { color: inherit; }
   display: none;
   background: none;
   border: none;
-  color: var(--white);
+  color: var(--navy);
   font-size: 28px;
   cursor: pointer;
   padding: 4px;
@@ -173,7 +173,7 @@ a { color: inherit; }
 
 .hero {
   margin-top: var(--nav-height);
-  background: var(--navy);
+  background: var(--red);
   position: relative;
   overflow: hidden;
   min-height: 520px;
@@ -184,8 +184,8 @@ a { color: inherit; }
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 20% 80%, rgba(0,0,0,0.2) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, var(--navy-light) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 80%, rgba(0,0,0,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, var(--red-light) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -209,7 +209,7 @@ a { color: inherit; }
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--white);
-  background: var(--red);
+  background: var(--navy);
   padding: 6px 16px;
   border-radius: 2px;
   margin-bottom: 20px;
@@ -227,7 +227,7 @@ a { color: inherit; }
 .hero-subtitle {
   font-family: var(--font-heading);
   font-size: 24px;
-  color: var(--gray);
+  color: rgba(255,255,255,0.88);
   margin-bottom: 24px;
   font-weight: 400;
   font-style: italic;
@@ -722,6 +722,14 @@ a { color: inherit; }
   text-transform: uppercase;
 }
 
+.site-footer-logo {
+  display: block;
+  margin: 0 auto 16px;
+  height: 48px;
+  width: auto;
+  opacity: 0.85;
+}
+
 
 /* ==========================================================================
    RESPONSIVE
@@ -757,14 +765,15 @@ a { color: inherit; }
     position: absolute;
     top: var(--nav-height);
     left: 0; right: 0;
-    background: var(--navy-dark);
+    background: var(--white);
     padding: 16px 24px;
     gap: 8px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid var(--border);
   }
   .nav-links.open a {
     padding: 12px 14px;
+    color: var(--navy);
   }
   .nav-links.open .nav-donate { margin-left: 0; margin-top: 8px; text-align: center; }
   .nav-toggle { display: block; }
