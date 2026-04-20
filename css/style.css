@@ -34,7 +34,7 @@
   --font-body: 'Work Sans', 'Segoe UI', sans-serif;
 
   --max-width: 1100px;
-  --nav-height: 96px;
+  --nav-height: 86px;
 }
 
 /* --- Reset --- */
@@ -92,7 +92,7 @@ a { color: inherit; }
 }
 
 .nav-logo img {
-  height: 75px;
+  height: 72px;
   width: auto;
 }
 
@@ -722,12 +722,19 @@ a { color: inherit; }
   text-transform: uppercase;
 }
 
+.site-footer-logo-wrap {
+  display: block;
+  max-width: fit-content;
+  margin: 0 auto 20px;
+  background: var(--white);
+  border-radius: 10px;
+  padding: 12px 24px;
+}
+
 .site-footer-logo {
   display: block;
-  margin: 0 auto 16px;
-  height: 48px;
+  height: 100px;
   width: auto;
-  opacity: 0.85;
 }
 
 
