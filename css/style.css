@@ -676,6 +676,111 @@ a { color: inherit; }
   box-shadow: 0 4px 20px rgba(27,42,74,0.1);
 }
 
+/* Endorsements */
+.featured-quotes {
+  display: grid;
+  gap: 24px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.featured-quote {
+  background: var(--white);
+  padding: 32px 36px;
+  border-radius: 8px;
+  border-left: 4px solid var(--red);
+  box-shadow: 0 4px 20px rgba(27,42,74,0.08);
+}
+
+.featured-quote-text {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.65;
+  color: var(--text-mid);
+  margin-bottom: 18px;
+}
+
+.featured-quote-author {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.featured-quote-author span {
+  display: block;
+  font-weight: 500;
+  color: var(--text-light);
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+  font-size: 12px;
+  text-transform: none;
+}
+
+.endorser-tier {
+  margin-bottom: 56px;
+}
+
+.endorser-tier:last-child {
+  margin-bottom: 0;
+}
+
+.endorser-tier-header {
+  font-family: var(--font-heading);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--navy);
+  border-bottom: 2px solid var(--red);
+  padding-bottom: 10px;
+  margin-bottom: 24px;
+}
+
+.endorser-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.endorser {
+  background: var(--white);
+  padding: 18px 22px;
+  border-radius: 6px;
+  border-left: 3px solid var(--red);
+  box-shadow: 0 1px 3px rgba(27,42,74,0.06);
+}
+
+.endorser-name {
+  font-family: var(--font-heading);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.endorser-title {
+  font-size: 13px;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.endorser-status {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-left: 8px;
+  padding: 2px 6px;
+  background: var(--gray-pale);
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
 /* Endorsement placeholder */
 .endorsement-message {
   text-align: center;

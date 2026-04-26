@@ -1,0 +1,156 @@
+{
+  "endorsements": [
+    {
+      "tier": "wisconsin_supreme_court",
+      "name": "Annette Ziegler",
+      "title": "Wisconsin Supreme Court Justice",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "wisconsin_supreme_court",
+      "name": "Rebecca Bradley",
+      "title": "Wisconsin Supreme Court Justice",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "wisconsin_court_of_appeals_district_ii",
+      "name": "Mark Gundrum",
+      "title": "Court of Appeals Judge, District II",
+      "quote": "Paul and I have been close friends for 20 years. With his experience as a longtime prosecutor, he's the one I trust to keep my family—and all of our families in Waukesha County—safe.",
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "wisconsin_court_of_appeals_district_ii",
+      "name": "Shelley Grogan",
+      "title": "Court of Appeals Judge, District II",
+      "quote": "I wholeheartedly endorse Paul Dedinsky for Waukesha County Circuit Court. He is a principled conservative who has demonstrated that he will apply the law as written; support our Constitutions; and faithfully guard against encroachment of our liberties. He has my full support.",
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "wisconsin_court_of_appeals_district_ii",
+      "name": "Maria Lazar",
+      "title": "Court of Appeals Judge, District II",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "wisconsin_court_of_appeals_district_ii",
+      "name": "Anthony LoCoco",
+      "title": "Court of Appeals Judge, District II",
+      "quote": "I could not be more excited to endorse former Governor Walker-appointed judge and career prosecutor, Paul Dedinsky, for the Waukesha County bench. Paul is well known to so many of us precisely because he has already devoted his life's work to making Wisconsin a safer place for our families. I also know him to be a person of deep faith and true integrity. He is the perfect match for this important position.",
+      "status": "ascending",
+      "notes": null
+    },
+    {
+      "tier": "waukesha_county_circuit_court",
+      "name": "Michael Aprahamian",
+      "title": "Waukesha County Circuit Court Judge",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "waukesha_county_circuit_court",
+      "name": "Cody Horlacher",
+      "title": "Waukesha County Circuit Court Judge",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "waukesha_county_circuit_court",
+      "name": "Michael Maxwell",
+      "title": "Waukesha County Circuit Court Judge",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "waukesha_county_circuit_court",
+      "name": "Jack Melvin",
+      "title": "Waukesha County Circuit Court Judge",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "waukesha_county_circuit_court",
+      "name": "Jack Pitzo",
+      "title": "Waukesha County Circuit Court Judge",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "waukesha_county_circuit_court",
+      "name": "Scott Wagner",
+      "title": "Waukesha County Circuit Court Judge",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "waukesha_county_circuit_court",
+      "name": "Zach Wittchow",
+      "title": "Waukesha County Circuit Court Judge",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "waukesha_county_circuit_court",
+      "name": "Michael Bohren",
+      "title": "Waukesha County Circuit Court Judge",
+      "quote": null,
+      "status": "retired",
+      "notes": null
+    },
+    {
+      "tier": "waukesha_county_circuit_court",
+      "name": "Kathryn Foster",
+      "title": "Waukesha County Circuit Court Judge",
+      "quote": null,
+      "status": "retired",
+      "notes": null
+    },
+    {
+      "tier": "other_jurisdiction",
+      "name": "Daniel Kelly",
+      "title": "Wisconsin Supreme Court Justice",
+      "quote": null,
+      "status": "retired",
+      "notes": null
+    },
+    {
+      "tier": "other_jurisdiction",
+      "name": "T. Christopher Dee",
+      "title": "Milwaukee County Circuit Court Judge",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "other_jurisdiction",
+      "name": "Robert Dehring",
+      "title": "Jefferson County Circuit Court Judge",
+      "quote": null,
+      "status": "active",
+      "notes": null
+    },
+    {
+      "tier": "other_jurisdiction",
+      "name": "Grant Scaife",
+      "title": "Washington County Circuit Court Judge",
+      "quote": null,
+      "status": "ascending",
+      "notes": null
+    }
+  ]
+}
