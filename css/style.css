@@ -35,6 +35,7 @@
 
   --max-width: 1100px;
   --nav-height: 86px;
+  --nav-height-tall: 140px;
 }
 
 /* --- Reset --- */
@@ -72,6 +73,12 @@ a { color: inherit; }
   z-index: 1000;
   background: var(--white);
   border-bottom: 3px solid var(--red);
+  height: var(--nav-height-tall);
+  transition: height 0.25s ease;
+}
+
+body.is-scrolled .site-nav {
+  height: var(--nav-height);
 }
 
 .nav-inner {
@@ -81,7 +88,7 @@ a { color: inherit; }
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  height: var(--nav-height);
+  height: 100%;
 }
 
 .nav-logo {
@@ -92,8 +99,13 @@ a { color: inherit; }
 }
 
 .nav-logo img {
-  height: 72px;
+  height: 110px;
   width: auto;
+  transition: height 0.25s ease;
+}
+
+body.is-scrolled .nav-logo img {
+  height: 64px;
 }
 
 .nav-logo-text {
@@ -172,11 +184,16 @@ a { color: inherit; }
    ========================================================================== */
 
 .hero {
-  margin-top: var(--nav-height);
+  margin-top: var(--nav-height-tall);
   background: var(--red);
   position: relative;
   overflow: hidden;
   min-height: 520px;
+  transition: margin-top 0.25s ease;
+}
+
+body.is-scrolled .hero {
+  margin-top: var(--nav-height);
 }
 
 .hero::before {
@@ -259,13 +276,18 @@ a { color: inherit; }
    ========================================================================== */
 
 .page-header {
-  margin-top: var(--nav-height);
+  margin-top: var(--nav-height-tall);
   background: var(--red);
   padding: 52px 24px;
   text-align: center;
   position: relative;
   overflow: hidden;
   border-bottom: 4px solid var(--navy);
+  transition: margin-top 0.25s ease;
+}
+
+body.is-scrolled .page-header {
+  margin-top: var(--nav-height);
 }
 
 .page-header::before {
@@ -1082,7 +1104,7 @@ a { color: inherit; }
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: var(--nav-height);
+    top: 100%;
     left: 0; right: 0;
     background: var(--white);
     padding: 16px 24px;

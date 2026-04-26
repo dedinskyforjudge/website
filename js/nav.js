@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
       links.classList.toggle('open');
       toggle.textContent = links.classList.contains('open') ? '✕' : '☰';
     });
-    // Close on link click
     links.querySelectorAll('a').forEach(function(a) {
       a.addEventListener('click', function() {
         links.classList.remove('open');
@@ -15,4 +14,18 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   }
+
+  // Shrinking nav on scroll
+  var ticking = false;
+  function update() {
+    document.body.classList.toggle('is-scrolled', window.scrollY > 10);
+    ticking = false;
+  }
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      window.requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+  update();
 });
