@@ -2,7 +2,7 @@
   "endorsements": [
     {
       "tier": "wisconsin_supreme_court",
-      "name": "Annette Ziegler",
+      "name": "Annette Kingsland Ziegler",
       "title": "Wisconsin Supreme Court Justice",
       "quote": null,
       "status": "active",
@@ -10,7 +10,7 @@
     },
     {
       "tier": "wisconsin_supreme_court",
-      "name": "Rebecca Bradley",
+      "name": "Rebecca Grassl Bradley",
       "title": "Wisconsin Supreme Court Justice",
       "quote": null,
       "status": "active",
@@ -19,15 +19,15 @@
     {
       "tier": "wisconsin_court_of_appeals_district_ii",
       "name": "Mark Gundrum",
-      "title": "Court of Appeals Judge, District II",
+      "title": "Wisconsin Court of Appeals Judge, District II",
       "quote": "Paul and I have been close friends for 20 years. With his experience as a longtime prosecutor, he's the one I trust to keep my family—and all of our families in Waukesha County—safe.",
       "status": "active",
       "notes": null
     },
     {
       "tier": "wisconsin_court_of_appeals_district_ii",
-      "name": "Shelley Grogan",
-      "title": "Court of Appeals Judge, District II",
+      "name": "Shelley A. Grogan",
+      "title": "Wisconsin Court of Appeals Judge, District II",
       "quote": "I wholeheartedly endorse Paul Dedinsky for Waukesha County Circuit Court. He is a principled conservative who has demonstrated that he will apply the law as written; support our Constitutions; and faithfully guard against encroachment of our liberties. He has my full support.",
       "status": "active",
       "notes": null
@@ -35,7 +35,7 @@
     {
       "tier": "wisconsin_court_of_appeals_district_ii",
       "name": "Maria Lazar",
-      "title": "Court of Appeals Judge, District II",
+      "title": "Wisconsin Court of Appeals Judge, District II",
       "quote": null,
       "status": "active",
       "notes": null
@@ -74,7 +74,7 @@
     },
     {
       "tier": "waukesha_county_circuit_court",
-      "name": "Jack Melvin",
+      "name": "J. Arthur Melvin III",
       "title": "Waukesha County Circuit Court Judge",
       "quote": null,
       "status": "active",
@@ -121,7 +121,7 @@
       "notes": null
     },
     {
-      "tier": "other_jurisdiction",
+      "tier": "wisconsin_supreme_court",
       "name": "Daniel Kelly",
       "title": "Wisconsin Supreme Court Justice",
       "quote": null,
