@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Support — Dedinsky for Judge</title>
-  <meta name="description" content="How to support Paul Dedinsky's campaign for Waukesha County Circuit Court Judge.">
+  <meta name="description" content="Get involved with Paul Dedinsky's campaign for Waukesha County Circuit Court Judge.">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="img/icon.svg" type="image/svg+xml">
 </head>
@@ -34,17 +34,87 @@
 
   <section class="section section--white">
     <div class="section-inner">
-      <div class="card-grid card-grid--2" style="max-width:800px; margin:0 auto;">
-        <div class="support-card">
-          <h3>Contact the Campaign</h3>
-          <p>For questions, media inquiries, or to share your support — we'd love to hear from you.</p>
-          <a href="mailto:info@dedinskyforjudge.com" class="contact-link">info@dedinskyforjudge.com</a>
+      <div class="section-header">
+        <div class="overline">Get Involved</div>
+        <h2>Ways You Can Support Paul</h2>
+        <div class="bar"></div>
+      </div>
+      <div class="card-grid card-grid--2">
+        <div class="card">
+          <h3>Display a Yard Sign</h3>
+          <p>Put a Dedinsky for Judge sign in your yard and let your neighbors know who you're voting for. Yard signs are one of the highest-impact, lowest-effort ways to support a local campaign.</p>
         </div>
-        <div class="support-card">
-          <h3>Spread the Word</h3>
-          <p>The most powerful thing you can do is talk to your neighbors, share this site, and make sure people know about the race. Local elections are decided by who shows up.</p>
+        <div class="card">
+          <h3>Host a Fundraiser</h3>
+          <p>Open your home — or a local venue — to introduce Paul to friends, neighbors, and colleagues. Even a small gathering helps build the financial foundation a winning campaign needs.</p>
+        </div>
+        <div class="card">
+          <h3>Knock on Doors</h3>
+          <p>Door-to-door conversations are how judicial races are won. Join the canvassing team and help spread the word in your neighborhood and across Waukesha County.</p>
+        </div>
+        <div class="card">
+          <h3>Host a Meet &amp; Greet</h3>
+          <p>Invite Paul to a casual gathering of neighbors and friends. These intimate conversations are where voters meet the person behind the campaign and decide who they trust.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="section section--light">
+    <div class="section-inner" style="max-width:720px;">
+      <div class="section-header">
+        <div class="overline">Sign Up</div>
+        <h2>Get Involved Today</h2>
+        <div class="bar"></div>
+      </div>
+
+      <div data-fs-success class="form-success" hidden>
+        <strong>Thanks for signing up!</strong> The campaign will be in touch soon.
+      </div>
+      <div data-fs-error class="form-error"></div>
+
+      <form id="support-form" class="support-form">
+        <div class="form-row">
+          <label for="name">Name <span class="required">*</span></label>
+          <input type="text" id="name" name="name" data-fs-field required>
+          <span data-fs-error="name" class="field-error"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="email">Email <span class="required">*</span></label>
+          <input type="email" id="email" name="email" data-fs-field required>
+          <span data-fs-error="email" class="field-error"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="phone">Phone <span class="optional">(Optional)</span></label>
+          <input type="tel" id="phone" name="phone" data-fs-field placeholder="(555) 555-5555">
+          <span data-fs-error="phone" class="field-error"></span>
+        </div>
+
+        <fieldset class="form-checkboxes">
+          <legend>Ways you'd like to help</legend>
+          <label class="check"><input type="checkbox" name="help_yard_sign" value="Yes"> Display a yard sign</label>
+          <label class="check"><input type="checkbox" name="help_meet_greet" value="Yes"> Host a meet &amp; greet</label>
+          <label class="check"><input type="checkbox" name="help_fundraiser" value="Yes"> Host a fundraiser</label>
+          <label class="check"><input type="checkbox" name="help_knock_doors" value="Yes"> Knock on doors</label>
+          <label class="check"><input type="checkbox" name="help_other" value="Yes"> Other</label>
+        </fieldset>
+
+        <div class="form-row">
+          <label for="message">Message <span class="optional">(Optional)</span></label>
+          <textarea id="message" name="message" data-fs-field rows="4" placeholder="Tell us anything else you'd like the campaign to know."></textarea>
+          <span data-fs-error="message" class="field-error"></span>
+        </div>
+
+        <fieldset class="form-checkboxes">
+          <legend>Stay in touch</legend>
+          <label class="check"><input type="checkbox" name="updates_email" value="Yes" checked> I'd like to receive campaign email updates</label>
+          <label class="check"><input type="checkbox" name="updates_text" value="Yes"> I'd like to receive text updates (opt-out anytime)</label>
+        </fieldset>
+
+        <button type="submit" data-fs-submit-btn class="btn btn--red">Sign Me Up</button>
+      </form>
     </div>
   </section>
 
@@ -52,7 +122,7 @@
     <div class="section-inner" style="text-align:center;">
       <div class="section-header">
         <div class="overline">Contribute</div>
-        <h2>Donate to the Campaign</h2>
+        <h2>Support the Campaign Financially</h2>
         <div class="bar"></div>
       </div>
       <p class="donate-copy">Your financial support helps Paul reach voters across Waukesha County.</p>
@@ -69,5 +139,10 @@
   </footer>
 
   <script src="js/nav.js"></script>
+  <script>
+    window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+    formspree('initForm', { formElement: '#support-form', formId: 'mojyzvpo' });
+  </script>
+  <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 </body>
 </html>

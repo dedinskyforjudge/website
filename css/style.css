@@ -676,6 +676,141 @@ a { color: inherit; }
   box-shadow: 0 4px 20px rgba(27,42,74,0.1);
 }
 
+/* Support form */
+.support-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.form-row label .required {
+  color: var(--red);
+}
+
+.form-row label .optional {
+  color: var(--text-muted);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+}
+
+.form-row input,
+.form-row textarea {
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--white);
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+
+.form-row input:focus,
+.form-row textarea:focus {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(166,14,13,0.1);
+}
+
+.form-row textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-row input[aria-invalid="true"],
+.form-row textarea[aria-invalid="true"] {
+  border-color: var(--red);
+}
+
+.field-error {
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 500;
+  min-height: 1em;
+}
+
+.form-checkboxes {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px 18px;
+  background: var(--white);
+}
+
+.form-checkboxes legend {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 0 6px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 15px;
+  color: var(--text-mid);
+  cursor: pointer;
+}
+
+.check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--red);
+  cursor: pointer;
+}
+
+.support-form button[type="submit"] {
+  align-self: flex-start;
+  cursor: pointer;
+  border: none;
+  margin-top: 8px;
+}
+
+.support-form button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-success {
+  background: #f0f8f0;
+  border-left: 4px solid #2d7a2d;
+  padding: 16px 20px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  font-size: 15px;
+  color: #1a4a1a;
+}
+
+.form-error {
+  color: var(--red);
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.form-error:empty {
+  display: none;
+}
+
 /* Endorsements */
 .featured-quotes {
   display: grid;
@@ -767,18 +902,12 @@ a { color: inherit; }
   font-weight: 500;
 }
 
-.endorser-status {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
+.endorser-retired {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
   color: var(--text-muted);
-  margin-left: 8px;
-  padding: 2px 6px;
-  background: var(--gray-pale);
-  border-radius: 3px;
-  vertical-align: middle;
+  font-style: italic;
 }
 
 /* Endorsement placeholder */
