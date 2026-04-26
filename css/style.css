@@ -1200,16 +1200,29 @@ body.is-scrolled .page-header {
     top: 100%;
     left: 0; right: 0;
     background: var(--white);
-    padding: 16px 24px;
-    gap: 8px;
+    padding: 0;
+    gap: 0;
     box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     border-top: 1px solid var(--border);
   }
-  .nav-links.open a {
-    padding: 12px 14px;
-    color: var(--navy);
+  .nav-links.open li {
+    border-bottom: 1px solid var(--border);
   }
-  .nav-links.open .nav-donate { margin-left: 0; margin-top: 8px; text-align: center; }
+  .nav-links.open li:last-child {
+    border-bottom: none;
+  }
+  .nav-links.open a {
+    display: block;
+    padding: 16px 24px;
+    color: var(--navy);
+    border-radius: 0;
+  }
+  .nav-links.open .nav-donate {
+    margin: 12px 24px;
+    text-align: center;
+    border-radius: 4px;
+    padding: 14px 22px;
+  }
   .nav-toggle { display: block; }
 
   .hero h1 { font-size: 38px; }
