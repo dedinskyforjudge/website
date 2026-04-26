@@ -701,6 +701,65 @@ body.is-scrolled .page-header {
   box-shadow: 0 4px 20px rgba(27,42,74,0.1);
 }
 
+/* Icons (inline SVG, Heroicons-style) */
+.icon-svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.icon-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.icon-row:last-child { border-bottom: none; }
+
+.icon-row .icon-svg {
+  width: 28px;
+  height: 28px;
+  color: var(--red);
+}
+
+.icon-row .icon-label {
+  flex: 1;
+  font-size: 15px;
+  color: var(--text-mid);
+  line-height: 1.4;
+}
+
+.icon-row .icon-date {
+  font-weight: 700;
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .icon-row { flex-wrap: wrap; }
+  .icon-row .icon-date { white-space: normal; width: 100%; padding-left: 44px; }
+}
+
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 14px;
+  color: var(--red);
+}
+
+.feature-icon .icon-svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: 1.5;
+}
+
 /* Vote page */
 .vote-date {
   padding: 40px 28px;
