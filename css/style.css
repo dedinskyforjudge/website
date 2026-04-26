@@ -676,6 +676,81 @@ a { color: inherit; }
   box-shadow: 0 4px 20px rgba(27,42,74,0.1);
 }
 
+/* Vote page */
+.vote-date {
+  padding: 40px 28px;
+  border: 2px solid var(--navy);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: 0 4px 20px rgba(27,42,74,0.06);
+}
+
+.vote-date-day {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 5px;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+
+.vote-date-main {
+  font-family: var(--font-heading);
+  font-size: 64px;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.05;
+  margin-bottom: 14px;
+}
+
+.vote-date-context {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-style: italic;
+  color: var(--text-mid);
+  margin-bottom: 6px;
+}
+
+.vote-date-time {
+  font-size: 15px;
+  color: var(--text-light);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.vote-dates {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.vote-dates td {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.vote-dates tr:last-child td {
+  border-bottom: none;
+}
+
+.vote-dates td:first-child {
+  color: var(--text-mid);
+}
+
+.vote-dates td:last-child {
+  font-weight: 700;
+  color: var(--navy);
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .vote-date-main { font-size: 44px; }
+  .vote-dates td:last-child { white-space: normal; }
+}
+
 /* Support form */
 .support-form {
   display: flex;
