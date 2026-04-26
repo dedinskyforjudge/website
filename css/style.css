@@ -260,19 +260,21 @@ a { color: inherit; }
 
 .page-header {
   margin-top: var(--nav-height);
-  background: var(--navy);
+  background: var(--red);
   padding: 52px 24px;
   text-align: center;
   position: relative;
   overflow: hidden;
-  border-bottom: 5px solid var(--red);
+  border-bottom: 4px solid var(--navy);
 }
 
 .page-header::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 120%, var(--navy-light) 0%, transparent 60%);
+  background:
+    radial-gradient(ellipse at 30% 100%, rgba(0,0,0,0.15) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 0%, var(--red-light) 0%, transparent 45%);
   pointer-events: none;
 }
 
@@ -288,7 +290,7 @@ a { color: inherit; }
 
 .page-header p {
   font-size: 15px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.85);
   position: relative;
   z-index: 1;
   max-width: 500px;
@@ -300,7 +302,7 @@ a { color: inherit; }
 .page-header .accent-bar {
   width: 50px;
   height: 3px;
-  background: var(--red);
+  background: var(--white);
   margin: 16px auto 0;
   position: relative;
   z-index: 1;
