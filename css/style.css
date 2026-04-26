@@ -659,6 +659,40 @@ body.is-scrolled .page-header {
   justify-content: center;
 }
 
+.donate-notice {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  background: var(--gray-pale);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--red);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.donate-notice-icon {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.donate-notice h3 {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+.donate-notice p {
+  font-size: 15px;
+  color: var(--text-mid);
+  line-height: 1.65;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* CTA Button */
 .btn {
   display: inline-block;
