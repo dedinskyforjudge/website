@@ -265,6 +265,7 @@ a { color: inherit; }
   text-align: center;
   position: relative;
   overflow: hidden;
+  border-bottom: 5px solid var(--red);
 }
 
 .page-header::before {
@@ -679,10 +680,10 @@ a { color: inherit; }
 /* Vote page */
 .vote-date {
   padding: 40px 28px;
-  border: 2px solid var(--navy);
+  border: 3px solid var(--red);
   border-radius: 8px;
   background: var(--white);
-  box-shadow: 0 4px 20px rgba(27,42,74,0.06);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
 }
 
 .vote-date-day {
