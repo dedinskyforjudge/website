@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://dedinskyforjudge.com/</loc>
+    <loc>https://dedinskyforjudge.netlify.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://dedinskyforjudge.com/about.html</loc>
+    <loc>https://dedinskyforjudge.netlify.app/about.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://dedinskyforjudge.com/vote.html</loc>
+    <loc>https://dedinskyforjudge.netlify.app/vote.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://dedinskyforjudge.com/endorsements.html</loc>
+    <loc>https://dedinskyforjudge.netlify.app/endorsements.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://dedinskyforjudge.com/support.html</loc>
+    <loc>https://dedinskyforjudge.netlify.app/support.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://dedinskyforjudge.com/donate.html</loc>
+    <loc>https://dedinskyforjudge.netlify.app/donate.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

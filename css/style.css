@@ -659,6 +659,78 @@ body.is-scrolled .page-header {
   justify-content: center;
 }
 
+.donate-tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+.donate-tier {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 16px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  background: var(--white);
+  transition: border-color 0.15s, transform 0.1s, box-shadow 0.15s, background 0.15s;
+  min-height: 96px;
+}
+
+.donate-tier:hover {
+  border-color: var(--red);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(166,14,13,0.18);
+}
+
+.donate-tier-amount {
+  font-family: var(--font-heading);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1;
+}
+
+.donate-tier-tag {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.donate-tier--featured {
+  border-color: var(--red);
+  background: var(--red);
+}
+
+.donate-tier--featured .donate-tier-amount {
+  color: var(--white);
+}
+
+.donate-tier--featured .donate-tier-tag {
+  color: rgba(255,255,255,0.9);
+}
+
+.donate-tier--featured:hover {
+  background: var(--red-dark);
+  border-color: var(--red-dark);
+}
+
+@media (max-width: 600px) {
+  .donate-tiers {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .donate-tier { padding: 24px 12px; min-height: 88px; }
+  .donate-tier-amount { font-size: 28px; }
+}
+
 .donate-notice {
   max-width: 540px;
   margin: 0 auto;
