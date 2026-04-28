@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dedinskyforjudge.netlify.app/sitemap.xml
+Sitemap: https://dedinsky4judge.com/sitemap.xml
