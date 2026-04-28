@@ -265,6 +265,9 @@ body.is-scrolled .hero {
 
 .hero-photo img {
   max-height: 420px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
   border-radius: 6px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
 }
