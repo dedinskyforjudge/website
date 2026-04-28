@@ -805,6 +805,8 @@ body.is-scrolled .page-header {
 
 /* About page photo */
 .about-photo {
+  max-width: 100%;
+  height: auto;
   border-radius: 6px;
   box-shadow: 0 4px 20px rgba(27,42,74,0.1);
 }
