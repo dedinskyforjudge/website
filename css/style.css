@@ -1225,6 +1225,16 @@ body.is-scrolled .page-header {
   text-transform: uppercase;
 }
 
+.site-footer a {
+  color: rgba(255,255,255,0.55);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.site-footer a:hover {
+  color: rgba(255,255,255,0.85);
+}
+
 .site-footer-logo-wrap {
   display: block;
   max-width: fit-content;
