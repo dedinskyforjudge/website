@@ -1,0 +1,21 @@
+{
+  "name": "Dedinsky for Judge",
+  "short_name": "Dedinsky",
+  "description": "Paul Dedinsky for Waukesha County Circuit Court Judge",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1b2a4a",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
