@@ -5,3 +5,29 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
   Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.formspree.io https://formspree.io; frame-ancestors 'none'; form-action 'self' https://formspree.io https://api.formspree.io; base-uri 'self'; object-src 'none'
+
+# Static assets — short cache (1h) since filenames aren't hashed
+/css/*
+  Cache-Control: public, max-age=3600
+
+/js/*
+  Cache-Control: public, max-age=3600
+
+/img/*
+  Cache-Control: public, max-age=3600
+
+/fonts/*
+  Cache-Control: public, max-age=3600
+
+/*.svg
+  Cache-Control: public, max-age=3600
+
+/*.ico
+  Cache-Control: public, max-age=3600
+
+# HTML — always revalidate so updates appear immediately
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
