@@ -19,10 +19,19 @@
 /fonts/*
   Cache-Control: public, max-age=3600
 
-/*.svg
+# Root-level icons (CF Pages applies rules cumulatively, so we list these
+# explicitly rather than using /*.png or /*.ico wildcards that would also
+# match files under /img/ and produce duplicate Cache-Control headers).
+/favicon.ico
   Cache-Control: public, max-age=3600
 
-/*.ico
+/favicon.png
+  Cache-Control: public, max-age=3600
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=3600
+
+/apple-touch-icon-precomposed.png
   Cache-Control: public, max-age=3600
 
 # HTML — always revalidate so updates appear immediately
