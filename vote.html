@@ -44,6 +44,7 @@
 </head>
 
 <body>
+  <a class="skip-link" href="#main">Skip to main content</a>
 
   <nav class="site-nav">
     <div class="nav-inner">
@@ -53,7 +54,7 @@
       <button class="nav-toggle" aria-label="Menu">☰</button>
       <ul class="nav-links">
         <li><a href="/about">About</a></li>
-        <li><a href="/vote" class="active">Vote</a></li>
+        <li><a href="/vote" class="active" aria-current="page">Vote</a></li>
         <li><a href="/endorsements">Endorsements</a></li>
         <li><a href="/support">Support</a></li>
         <li><a href="https://secure.winred.com/paul-dedinsky-for-judge/donate-today?amount=150" target="_blank"
@@ -62,7 +63,7 @@
     </div>
   </nav>
 
-  <main>
+  <main id="main">
     <div class="page-header">
       <h1>How to Vote</h1>
       <div class="accent-bar"></div>
@@ -140,7 +141,7 @@
           </div>
         </div>
         <p style="font-size:13px; color:var(--text-muted); font-style:italic; margin-top:20px;">All dates and procedures
-          should be confirmed at <a href="https://myvote.wi.gov" target="_blank" rel="noopener"
+          should be confirmed at <a href="https://myvote.wi.gov" target="_blank" rel="noopener noreferrer"
             style="color:var(--red); font-weight:600;">myvote.wi.gov</a> — Wisconsin's official voter resource.</p>
       </div>
     </section>
