@@ -6,13 +6,20 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://api.formspree.io https://formspree.io; frame-ancestors 'none'; form-action 'self' https://formspree.io https://api.formspree.io; base-uri 'self'; object-src 'none'
 
-# Static assets — short cache (1h) since filenames aren't hashed
+# CSS and JS revalidate every load. Filenames aren't hashed, so caching
+# them risks serving stale CSS alongside fresh HTML — which is exactly
+# what bit us when the skip-link rolled out (cached old CSS + new HTML
+# broke margin-collapse and created a visible gap below the nav).
+# Browsers send If-None-Match and we serve 304 if unchanged, so the
+# bandwidth cost is negligible.
 /css/*
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=0, must-revalidate
 
 /js/*
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=0, must-revalidate
 
+# Images and fonts can stay cached — we rarely change those, and when we
+# do it tends to be deliberate (new photo, new font weight).
 /img/*
   Cache-Control: public, max-age=3600
 
