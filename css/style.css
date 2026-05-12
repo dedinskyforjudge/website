@@ -591,8 +591,10 @@ body.is-scrolled .page-header {
 
 .timeline-entry .timeline-note {
   margin-top: 14px;
-  padding: 4px 0 4px 18px;
+  padding: 12px 18px;
+  background: var(--gray-pale);
   border-left: 3px solid var(--red);
+  border-radius: 6px;
   font-style: italic;
   color: var(--navy);
 }
