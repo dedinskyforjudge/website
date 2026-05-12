@@ -26,7 +26,7 @@
 /fonts/*
   Cache-Control: public, max-age=3600
 
-# Root-level icons (CF Pages applies rules cumulatively, so we list these
+# Root-level icons (Netlify applies rules cumulatively, so we list these
 # explicitly rather than using /*.png or /*.ico wildcards that would also
 # match files under /img/ and produce duplicate Cache-Control headers).
 /favicon.ico
