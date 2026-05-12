@@ -589,6 +589,14 @@ body.is-scrolled .page-header {
   line-height: 1.7;
 }
 
+.timeline-entry .timeline-note {
+  margin-top: 14px;
+  padding: 4px 0 4px 18px;
+  border-left: 3px solid var(--red);
+  font-style: italic;
+  color: var(--navy);
+}
+
 /* Education table */
 .edu-table {
   width: 100%;
