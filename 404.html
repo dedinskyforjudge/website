@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page Not Found — Dedinsky for Judge</title>
   <meta name="description" content="The page you're looking for doesn't exist.">
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/work-sans-normal-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/cormorant-garamond-normal-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/cormorant-garamond-italic-latin.woff2" crossorigin>
+  <link rel="dns-prefetch" href="https://secure.winred.com">
   <link rel="stylesheet" href="/css/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
@@ -20,8 +24,8 @@
       <a href="/" class="nav-logo">
         <img src="/img/logo.svg" alt="Dedinsky for Judge" width="1056" height="816">
       </a>
-      <button class="nav-toggle" aria-label="Menu">☰</button>
-      <ul class="nav-links">
+      <button class="nav-toggle" aria-label="Menu" aria-controls="nav-menu" aria-expanded="false">☰</button>
+      <ul id="nav-menu" class="nav-links">
         <li><a href="/about">About</a></li>
         <li><a href="/vote">Vote</a></li>
         <li><a href="/endorsements">Endorsements</a></li>
