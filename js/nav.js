@@ -3,22 +3,36 @@ document.addEventListener('DOMContentLoaded', function() {
   var toggle = document.querySelector('.nav-toggle');
   var links = document.querySelector('.nav-links');
   if (toggle && links) {
+    function setOpen(open) {
+      links.classList.toggle('open', open);
+      toggle.textContent = open ? '✕' : '☰';
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
     toggle.addEventListener('click', function() {
-      links.classList.toggle('open');
-      toggle.textContent = links.classList.contains('open') ? '✕' : '☰';
+      setOpen(!links.classList.contains('open'));
     });
     links.querySelectorAll('a').forEach(function(a) {
-      a.addEventListener('click', function() {
-        links.classList.remove('open');
-        toggle.textContent = '☰';
-      });
+      a.addEventListener('click', function() { setOpen(false); });
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && links.classList.contains('open')) {
+        setOpen(false);
+        toggle.focus();
+      }
     });
   }
 
-  // Shrinking nav on scroll
+  // Shrinking nav on scroll. Hysteresis: shrinking removes 54px of document
+  // height, so a single threshold could oscillate on pages barely taller
+  // than the viewport — shrink past 64, only grow back under 10.
   var ticking = false;
   function update() {
-    document.body.classList.toggle('is-scrolled', window.scrollY > 10);
+    var y = window.scrollY;
+    if (y > 64) {
+      document.body.classList.add('is-scrolled');
+    } else if (y < 10) {
+      document.body.classList.remove('is-scrolled');
+    }
     ticking = false;
   }
   window.addEventListener('scroll', function() {

@@ -1313,7 +1313,9 @@ body.is-scrolled .page-header {
   }
 }
 
-@media (max-width: 640px) {
+/* Hamburger takes over at 760px — below that the full-height logo plus five
+   inline links overflow the flex row */
+@media (max-width: 760px) {
   .nav-links { display: none; }
   .nav-links.open {
     display: flex;
@@ -1346,12 +1348,12 @@ body.is-scrolled .page-header {
     padding: 14px 22px;
   }
   .nav-toggle { display: block; }
+}
 
+@media (max-width: 640px) {
   .hero h1 { font-size: 38px; }
   .hero-subtitle { font-size: 19px; }
 
   .section { padding: 48px 20px; }
   .section-header h2 { font-size: 30px; }
-
-  .nav-logo-text { font-size: 15px; }
 }
