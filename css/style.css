@@ -3,7 +3,8 @@
    Brand Kit: Nagawicka Blue, Republican Red, Greatest Gray, Waukesha White
    ========================================================================== */
 
-/* Fonts loaded via HTML <link> for non-render-blocking behavior with font-display:swap */
+/* Fonts: see css/fonts.css — self-hosted variable fonts, font-display:swap,
+   core files preloaded from each page's <head> */
 
 /* --- Brand Kit Tokens --- */
 :root {
