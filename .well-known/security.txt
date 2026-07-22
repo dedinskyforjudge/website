@@ -1,0 +1,8 @@
+# Security contact for dedinsky4judge.com
+# This is a static informational campaign website with no user accounts,
+# database, or server-side processing.
+
+Contact: mailto:security@dedinsky4judge.com
+Expires: 2027-07-22T00:00:00Z
+Preferred-Languages: en
+Canonical: https://dedinsky4judge.com/.well-known/security.txt
