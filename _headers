@@ -4,6 +4,7 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Cross-Origin-Opener-Policy: same-origin
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://api.formspree.io https://formspree.io; frame-ancestors 'none'; form-action 'self' https://formspree.io https://api.formspree.io; base-uri 'self'; object-src 'none'
 
 # CSS and JS revalidate every load. Filenames aren't hashed, so caching
@@ -41,9 +42,28 @@
 /apple-touch-icon-precomposed.png
   Cache-Control: public, max-age=3600
 
-# HTML — always revalidate so updates appear immediately
+# HTML — always revalidate so updates appear immediately.
+# Pages are SERVED at extensionless URLs (/about), which /*.html cannot
+# match — Netlify's platform default happens to be must-revalidate too, but
+# don't rely on a platform default for correctness: list the real URLs.
+# /*.html stays for direct .html requests (both forms return 200).
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
 /
+  Cache-Control: public, max-age=0, must-revalidate
+
+/about
+  Cache-Control: public, max-age=0, must-revalidate
+
+/vote
+  Cache-Control: public, max-age=0, must-revalidate
+
+/endorsements
+  Cache-Control: public, max-age=0, must-revalidate
+
+/support
+  Cache-Control: public, max-age=0, must-revalidate
+
+/donate
   Cache-Control: public, max-age=0, must-revalidate
