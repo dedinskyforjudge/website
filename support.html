@@ -132,28 +132,35 @@
           <div class="bar"></div>
         </div>
 
-        <div data-fs-success class="form-success" hidden>
+        <div data-fs-success class="form-success" role="status" hidden>
           <strong>Thanks for signing up!</strong> The campaign will be in touch soon.
         </div>
-        <div data-fs-error class="form-error"></div>
+        <div data-fs-error class="form-error" role="status"></div>
 
         <form id="support-form" class="support-form" action="https://formspree.io/f/mojyzvpo" method="POST">
           <div class="form-row">
             <label for="name">Name <span class="required">*</span></label>
-            <input type="text" id="name" name="name" data-fs-field required>
+            <input type="text" id="name" name="name" data-fs-field autocomplete="name" required>
             <span data-fs-error="name" class="field-error"></span>
           </div>
 
           <div class="form-row">
             <label for="email">Email <span class="required">*</span></label>
-            <input type="email" id="email" name="email" data-fs-field required>
+            <input type="email" id="email" name="email" data-fs-field autocomplete="email" required>
             <span data-fs-error="email" class="field-error"></span>
           </div>
 
           <div class="form-row">
             <label for="phone">Phone <span class="optional">(Optional)</span></label>
-            <input type="tel" id="phone" name="phone" data-fs-field placeholder="(555) 555-5555">
+            <input type="tel" id="phone" name="phone" data-fs-field autocomplete="tel" placeholder="(555) 555-5555">
             <span data-fs-error="phone" class="field-error"></span>
+          </div>
+
+          <div class="form-row">
+            <label for="address">Address <span class="optional">(Optional — helps with yard sign delivery)</span></label>
+            <input type="text" id="address" name="address" data-fs-field autocomplete="street-address"
+              placeholder="Street, city, ZIP">
+            <span data-fs-error="address" class="field-error"></span>
           </div>
 
           <fieldset class="form-checkboxes">
@@ -182,6 +189,9 @@
             <label class="check"><input type="checkbox" name="updates_text" value="Yes"> I'd like to receive text
               updates (opt-out anytime)</label>
           </fieldset>
+
+          <input type="hidden" name="_subject" value="New supporter signup — dedinsky4judge.com">
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
 
           <button type="submit" data-fs-submit-btn class="btn btn--red">Sign Me Up</button>
         </form>

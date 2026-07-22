@@ -908,6 +908,26 @@ body.is-scrolled .page-header {
   display: none;
 }
 
+/* Formspree SDK state visibility. The SDK's own injected stylesheet is
+   disabled (useDefaultStyles:false in formspree-init.js) so these rules —
+   not its stock green/red palette — control appearance. The SDK toggles
+   data-fs-active on the success box, form-level error box, and per-field
+   error spans. */
+[data-fs-success],
+[data-fs-error] {
+  display: none;
+}
+
+[data-fs-success][data-fs-active],
+[data-fs-error][data-fs-active] {
+  display: block;
+}
+
+/* Spam honeypot — hidden from humans, tempting to bots */
+.support-form input[name="_gotcha"] {
+  display: none;
+}
+
 /* Endorsements */
 .featured-quotes {
   display: grid;
