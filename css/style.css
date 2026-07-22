@@ -292,6 +292,16 @@ body.is-scrolled .hero {
    PAGE HEADER — Inner Pages
    ========================================================================== */
 
+/* Pages without a .hero/.page-header (the 404) still need to clear the fixed nav */
+.error-section {
+  margin-top: var(--nav-height-tall);
+  transition: margin-top 0.25s ease;
+}
+
+body.is-scrolled .error-section {
+  margin-top: var(--nav-height);
+}
+
 .page-header {
   margin-top: var(--nav-height-tall);
   background: var(--red);
