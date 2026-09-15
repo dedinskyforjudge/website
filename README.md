@@ -45,6 +45,7 @@ python3 _includes/render.py --check  # exit 1 if any page is stale
 ```
 
 The render marks the current page's nav link active. Never edit the nav or footer inside a page directly; the next render overwrites it.
+Both modes reject malformed markers and missing, duplicate, or misordered shared structures before changing any page.
 
 ## Deployment
 
