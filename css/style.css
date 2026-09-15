@@ -427,6 +427,17 @@ body.is-scrolled .page-header {
 }
 .prose p + p { margin-top: 18px; }
 .prose strong { color: var(--text); }
+.prose-h2 {
+  font-family: var(--font-heading);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--navy);
+  margin: 32px 0 12px;
+}
+.text-link {
+  color: var(--red);
+  font-weight: 600;
+}
 
 /* Cards */
 .card-grid {
