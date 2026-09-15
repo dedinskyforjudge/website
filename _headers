@@ -70,3 +70,6 @@
 
 /privacy
   Cache-Control: public, max-age=0, must-revalidate
+
+/404
+  Cache-Control: public, max-age=0, must-revalidate
