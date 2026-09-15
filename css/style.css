@@ -434,6 +434,10 @@ body.is-scrolled .page-header {
   color: var(--navy);
   margin: 32px 0 12px;
 }
+.prose-h2--lead {
+  font-size: 30px;
+  margin: 0 0 20px;
+}
 .text-link {
   color: var(--red);
   font-weight: 600;
