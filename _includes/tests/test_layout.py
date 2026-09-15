@@ -165,7 +165,7 @@ def test_redirects_blocks_includes() -> None:
         for line in (ROOT / "_redirects").read_text(encoding="utf-8").splitlines()
         if line.strip() and not line.lstrip().startswith("#")
     ]
-    assert rules == [["/_includes/*", "/404.html", "404"]]
+    assert rules == [["/_includes/*", "/404.html", "404!"]]
 
 
 def test_rejects_malformed_opening_marker(tmp_path: Path) -> None:
