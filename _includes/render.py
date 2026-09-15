@@ -35,12 +35,15 @@ MARKER = re.compile(
 COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
 MARKER_COMMENT = re.compile(r"<!-- (?P<close>/?)include:(?P<name>[a-z]+) -->")
 MARKER_LIKE = re.compile(r"include\s*:", re.IGNORECASE)
+# Shared structures, as regexes: literal for the hand-authored blocks, and
+# attribute-order-insensitive for the script tag so an equivalent
+# serialization (e.g. `<script defer src=...>`) is not rejected.
 STRUCTURES = (
-    ("skip link", '<a class="skip-link" href="#main">'),
-    ("nav", '<nav class="site-nav">'),
-    ("main#main", '<main id="main">'),
-    ("footer", '<footer class="site-footer">'),
-    ("js/nav.js script", '<script src="/js/nav.js"></script>'),
+    ("skip link", re.compile(re.escape('<a class="skip-link" href="#main">'))),
+    ("nav", re.compile(re.escape('<nav class="site-nav">'))),
+    ("main#main", re.compile(re.escape('<main id="main">'))),
+    ("footer", re.compile(re.escape('<footer class="site-footer">'))),
+    ("js/nav.js script", re.compile(r'<script\b[^>]*\bsrc="/js/nav\.js"[^>]*>\s*</script>')),
 )
 
 # Pages whose nav link should read as "you are here". Keyed by file stem.
@@ -141,12 +144,12 @@ def validate_structures(source: str) -> list[str]:
     """Return count and ordering errors for the shared page structures."""
     errors: list[str] = []
     positions: list[int] = []
-    for label, token in STRUCTURES:
-        count = source.count(token)
-        if count != 1:
-            errors.append(f"{label} must appear exactly once (found {count})")
+    for label, pattern in STRUCTURES:
+        matches = list(pattern.finditer(source))
+        if len(matches) != 1:
+            errors.append(f"{label} must appear exactly once (found {len(matches)})")
         else:
-            positions.append(source.index(token))
+            positions.append(matches[0].start())
     if len(positions) == len(STRUCTURES) and positions != sorted(positions):
         errors.append("shared structures are out of order")
     return errors

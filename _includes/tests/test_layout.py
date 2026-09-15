@@ -325,3 +325,19 @@ def test_invalid_write_mode_reports_all_pages_without_writing(tmp_path: Path) ->
     assert "invalid: about.html:" in result.stdout
     assert "invalid: vote.html:" in result.stdout
     assert after == before
+
+
+
+def test_accepts_equivalent_nav_script_serialization(tmp_path):
+    """S3.6 names the script, not its byte serialization: an equivalent tag
+    with a neutral attribute before src must not be rejected."""
+    import importlib.util, shutil
+    site = tmp_path / "site"
+    shutil.copytree(ROOT, site, ignore=shutil.ignore_patterns(".git", "__pycache__", "tests"))
+    page = site / "about.html"
+    src = page.read_text(encoding="utf-8")
+    assert src.count('<script src="/js/nav.js"></script>') == 1
+    page.write_text(src.replace('<script src="/js/nav.js"></script>', '<script defer src="/js/nav.js"></script>'), encoding="utf-8")
+    spec = importlib.util.spec_from_file_location("render_tmp", site / "_includes" / "render.py")
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    assert mod.validate_structures(page.read_text(encoding="utf-8")) == []
