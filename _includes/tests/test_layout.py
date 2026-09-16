@@ -250,14 +250,13 @@ def test_p6b_v01_focused_skip_link_stacks_above_fixed_navigation() -> None:
 
 def test_p6b_f03_browser_geometry_keeps_fragment_and_focused_skip_paths_distinct(tmp_path: Path) -> None:
     measurements = run_browser_skip_geometry(tmp_path)
-    assert len(measurements) == 8
+    assert len(measurements) == 48
     for measurement in measurements:
-        fragment = measurement["fragment"]
-        focused = measurement["focused"]
-        assert fragment["targetTop"] - fragment["navBottom"] > 0, measurement
-        assert focused["targetTop"] - focused["navBottom"] > 0, measurement
-        assert fragment["focused"] == "BODY", measurement
-        assert focused["focused"] == "MAIN", measurement
+        # 1px is the minimum baseline observed in P6b-fix3/clearance.tsv.
+        assert measurement["targetTop"] - measurement["navBottom"] >= 1, measurement
+        assert measurement["layoutPresent"] is True, measurement
+        expected_focus = "BODY" if measurement["path"] == "fragment" else "MAIN"
+        assert measurement["focused"] == expected_focus, measurement
 
 
 def run_browser_skip_geometry(tmp_path: Path) -> list[dict[str, object]]:
@@ -283,17 +282,29 @@ def run_browser_skip_geometry(tmp_path: Path) -> list[dict[str, object]]:
             cdp(connection, "Page.enable")
             cdp(connection, "Runtime.enable")
             measurements = []
-            for width in (390, 412, 768, 1280):
-                cdp(connection, "Emulation.setDeviceMetricsOverride", {"width": width, "height": 1000, "deviceScaleFactor": 1, "mobile": False})
-                for state in ("tall", "compact"):
-                    navigate(connection, f"http://127.0.0.1:{server.server_port}/index.html")
-                    cdp(connection, "Runtime.evaluate", {"expression": f"document.body.classList.toggle('is-scrolled', {state == 'compact'});"})
-                    fragment = evaluate_geometry(connection, "location.hash = 'main';")
-
-                    navigate(connection, f"http://127.0.0.1:{server.server_port}/index.html")
-                    cdp(connection, "Runtime.evaluate", {"expression": f"document.body.classList.toggle('is-scrolled', {state == 'compact'});"})
-                    focused = evaluate_geometry(connection, "const skip = document.querySelector('.skip-link[href=\"#main\"]'); skip.focus(); skip.click();")
-                    measurements.append({"width": width, "state": state, "fragment": fragment, "focused": focused})
+            for route, layout_class in (
+                ("index.html", ".hero"),
+                ("about.html", ".page-header"),
+                ("404.html", ".error-section"),
+            ):
+                for width in (390, 412, 768, 1280):
+                    cdp(connection, "Emulation.setDeviceMetricsOverride", {"width": width, "height": 1000, "deviceScaleFactor": 1, "mobile": False})
+                    for state in ("tall", "compact"):
+                        for path, activation in (
+                            ("fragment", "location.hash = 'main';"),
+                            ("focused-skip", "const skip = document.querySelector('.skip-link[href=\"#main\"]'); skip.focus(); skip.click();"),
+                        ):
+                            navigate(connection, f"http://127.0.0.1:{server.server_port}/{route}")
+                            cdp(connection, "Runtime.evaluate", {"expression": f"document.body.classList.toggle('is-scrolled', {state == 'compact'});"})
+                            measurement = evaluate_geometry(connection, activation, layout_class)
+                            measurements.append({
+                                "route": route,
+                                "layoutClass": layout_class,
+                                "width": width,
+                                "state": state,
+                                "path": path,
+                                **measurement,
+                            })
             return measurements
     finally:
         browser.terminate()
@@ -428,13 +439,14 @@ def navigate(connection: cdp_socket, url: str) -> None:
 navigate.counter = 0
 
 
-def evaluate_geometry(connection: cdp_socket, activation: str) -> dict[str, float | str]:
+def evaluate_geometry(connection: cdp_socket, activation: str, layout_class: str) -> dict[str, float | str | bool]:
     expression = f'''(async () => {{
         {activation}
         await new Promise(resolve => setTimeout(resolve, 350));
         const target = document.querySelector('main#main').getBoundingClientRect();
         const nav = document.querySelector('.site-nav').getBoundingClientRect();
-        return {{ targetTop: target.top, navBottom: nav.bottom, focused: document.activeElement.tagName }};
+        return {{ targetTop: target.top, navBottom: nav.bottom, focused: document.activeElement.tagName,
+            layoutPresent: Boolean(document.querySelector({json.dumps(layout_class)})) }};
     }})()'''
     result = cdp(connection, "Runtime.evaluate", {"expression": expression, "awaitPromise": True, "returnByValue": True})
     return result["result"]["value"]
