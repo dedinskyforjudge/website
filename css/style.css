@@ -59,23 +59,33 @@ body {
   font-size: 16px;
 }
 
+main {
+  scroll-margin-top: calc(var(--nav-height-tall) + 20px);
+}
+
+main:focus {
+  position: relative;
+  top: 1px;
+}
+
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
 
 /* Skip-to-main link — visually hidden until keyboard-focused */
 .skip-link {
   position: absolute;
-  top: -40px;
+  top: 0;
   left: 8px;
   background: var(--navy);
   color: #fff;
   padding: 8px 16px;
-  z-index: 200;
+  z-index: 1000;
   text-decoration: none;
   font-weight: 600;
   border-radius: 0 0 4px 4px;
+  transform: translateY(-100%);
 }
-.skip-link:focus { top: 0; }
+.skip-link:focus { transform: translateY(0); }
 
 
 /* ==========================================================================
@@ -85,7 +95,7 @@ a { color: inherit; }
 .site-nav {
   position: fixed;
   top: 0; left: 0; right: 0;
-  z-index: 1000;
+  z-index: 200;
   background: var(--white);
   border-bottom: 3px solid var(--red);
   height: var(--nav-height-tall);
@@ -163,6 +173,10 @@ body.is-scrolled .nav-logo img {
   background: var(--red-dark);
 }
 
+.nav-links .nav-donate.active {
+  background: var(--red-dark);
+}
+
 .nav-toggle {
   display: none;
   background: none;
@@ -180,16 +194,18 @@ body.is-scrolled .nav-logo img {
    ========================================================================== */
 
 .hero {
-  margin-top: var(--nav-height-tall);
+  margin-top: calc(var(--nav-height-tall) + 1px);
+  margin-bottom: -1px;
   background: var(--red);
   position: relative;
+  top: -1px;
   overflow: hidden;
   min-height: 520px;
   transition: margin-top 0.25s ease;
 }
 
 body.is-scrolled .hero {
-  margin-top: var(--nav-height);
+  margin-top: calc(var(--nav-height) + 1px);
 }
 
 .hero::before {
@@ -278,27 +294,32 @@ body.is-scrolled .hero {
 
 /* Pages without a .hero/.page-header (the 404) still need to clear the fixed nav */
 .error-section {
-  margin-top: var(--nav-height-tall);
+  margin-top: calc(var(--nav-height-tall) + 1px);
+  margin-bottom: -1px;
+  position: relative;
+  top: -1px;
   transition: margin-top 0.25s ease;
 }
 
 body.is-scrolled .error-section {
-  margin-top: var(--nav-height);
+  margin-top: calc(var(--nav-height) + 1px);
 }
 
 .page-header {
-  margin-top: var(--nav-height-tall);
+  margin-top: calc(var(--nav-height-tall) + 1px);
+  margin-bottom: -1px;
   background: var(--red);
   padding: 52px 24px;
   text-align: center;
   position: relative;
+  top: -1px;
   overflow: hidden;
   border-bottom: 4px solid var(--navy);
   transition: margin-top 0.25s ease;
 }
 
 body.is-scrolled .page-header {
-  margin-top: var(--nav-height);
+  margin-top: calc(var(--nav-height) + 1px);
 }
 
 .page-header::before {

@@ -1,7 +1,18 @@
+import json
+import base64
+from functools import partial
+import hashlib
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+import os
 import re
 import shutil
+import socket
+import struct
 import subprocess
 import sys
+from threading import Thread
+import time
+from urllib.request import urlopen
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Callable
@@ -28,6 +39,37 @@ ACTIVE_HREF = {
 }
 MARKER_RE = re.compile(r"<!--\s*(/?)include:([A-Za-z]+)\s*-->")
 ANCHOR_RE = re.compile(r"<a\b[^>]*>", re.DOTALL)
+
+
+def css_declarations(source: str, selector: str) -> dict[str, str]:
+    match = re.search(rf"{re.escape(selector)}\s*\{{([^}}]+)\}}", source)
+    assert match, selector
+    return {
+        name.strip(): value.strip()
+        for declaration in match.group(1).split(";")
+        if ":" in declaration
+        for name, value in [declaration.split(":", 1)]
+    }
+
+
+def relative_luminance(hex_color: str) -> float:
+    channels = [int(hex_color[index:index + 2], 16) / 255 for index in (1, 3, 5)]
+    linear = [value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4 for value in channels]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+
+def contrast_ratio(first: str, second: str) -> float:
+    light, dark = sorted((relative_luminance(first), relative_luminance(second)), reverse=True)
+    return (light + 0.05) / (dark + 0.05)
+
+
+class SupportFormParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.elements: list[tuple[str, dict[str, str | None]]] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.elements.append((tag, dict(attrs)))
 
 
 def copy_site(tmp_path: Path) -> Path:
@@ -168,6 +210,408 @@ def test_redirects_blocks_includes() -> None:
         if line.strip() and not line.lstrip().startswith("#")
     ]
     assert rules == [["/_includes/*", "/404.html", "404!"]]
+
+
+def test_p6b_v01_focused_skip_link_stacks_above_fixed_navigation() -> None:
+    source = (ROOT / "css/style.css").read_text(encoding="utf-8")
+    skip_z = int(css_declarations(source, ".skip-link")["z-index"])
+    nav_z = int(css_declarations(source, ".site-nav")["z-index"])
+    assert skip_z > nav_z
+
+    nav_height = int(css_declarations(source, ":root")["--nav-height-tall"].removesuffix("px"))
+    main_margin = css_declarations(source, "main")["scroll-margin-top"]
+    extra = int(re.search(r"\+\s*(\d+)px", main_margin).group(1))
+    assert main_margin.startswith("calc(var(--nav-height-tall)")
+    assert extra > 0
+    focus_offset = int(css_declarations(source, "main:focus")["top"].removesuffix("px"))
+    assert focus_offset > 0
+
+    for name in PAGES:
+        parser = SupportFormParser()
+        parser.feed((ROOT / name).read_text(encoding="utf-8"))
+        skip_links = [attrs for tag, attrs in parser.elements if tag == "a" and attrs.get("class") == "skip-link"]
+        mains = [attrs for tag, attrs in parser.elements if tag == "main" and attrs.get("id") == "main"]
+        assert skip_links == [{"class": "skip-link", "href": "#main"}], name
+        assert len(mains) == 1, name
+
+    navigation = run_navigation_harness()
+    assert navigation == {
+        "defaultPrevented": True,
+        "focused": "main",
+        "scrolled": "main",
+        "hash": "#main",
+        "tabindex": "-1",
+        "navState": "compact",
+    }
+    target_top = int(css_declarations(source, ":root")["--nav-height"].removesuffix("px")) + focus_offset
+    nav_bottom = int(css_declarations(source, ":root")["--nav-height"].removesuffix("px"))
+    assert target_top - nav_bottom > 0
+
+
+def test_p6b_f03_browser_geometry_keeps_fragment_and_focused_skip_paths_distinct(tmp_path: Path) -> None:
+    measurements = run_browser_skip_geometry(tmp_path)
+    assert len(measurements) == 48
+    for measurement in measurements:
+        # 1px is the minimum baseline observed in P6b-fix3/clearance.tsv.
+        assert measurement["targetTop"] - measurement["navBottom"] >= 1, measurement
+        assert measurement["layoutPresent"] is True, measurement
+        expected_focus = "BODY" if measurement["path"] == "fragment" else "MAIN"
+        assert measurement["focused"] == expected_focus, measurement
+
+
+def run_browser_skip_geometry(tmp_path: Path) -> list[dict[str, object]]:
+    server = ThreadingHTTPServer(("127.0.0.1", 0), partial(SilentRequestHandler, directory=str(ROOT)))
+    Thread(target=server.serve_forever, daemon=True).start()
+    port = reserve_port()
+    browser = subprocess.Popen(
+        [
+            "chromium",
+            "--headless=new",
+            "--no-sandbox",
+            "--disable-gpu",
+            f"--remote-debugging-port={port}",
+            f"--user-data-dir={tmp_path / 'chromium-profile'}",
+            "about:blank",
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        target = wait_for_browser_target(port, browser)
+        with cdp_socket(target["webSocketDebuggerUrl"]) as connection:
+            cdp(connection, "Page.enable")
+            cdp(connection, "Runtime.enable")
+            measurements = []
+            for route, layout_class in (
+                ("index.html", ".hero"),
+                ("about.html", ".page-header"),
+                ("404.html", ".error-section"),
+            ):
+                for width in (390, 412, 768, 1280):
+                    cdp(connection, "Emulation.setDeviceMetricsOverride", {"width": width, "height": 1000, "deviceScaleFactor": 1, "mobile": False})
+                    for state in ("tall", "compact"):
+                        for path, activation in (
+                            ("fragment", "location.hash = 'main';"),
+                            ("focused-skip", "const skip = document.querySelector('.skip-link[href=\"#main\"]'); skip.focus(); skip.click();"),
+                        ):
+                            navigate(connection, f"http://127.0.0.1:{server.server_port}/{route}")
+                            cdp(connection, "Runtime.evaluate", {"expression": f"document.body.classList.toggle('is-scrolled', {state == 'compact'});"})
+                            measurement = evaluate_geometry(connection, activation, layout_class)
+                            measurements.append({
+                                "route": route,
+                                "layoutClass": layout_class,
+                                "width": width,
+                                "state": state,
+                                "path": path,
+                                **measurement,
+                            })
+            return measurements
+    finally:
+        browser.terminate()
+        browser.wait(timeout=10)
+        server.shutdown()
+        server.server_close()
+
+
+class SilentRequestHandler(SimpleHTTPRequestHandler):
+    def log_message(self, _format: str, *_args: object) -> None:
+        pass
+
+
+def reserve_port() -> int:
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        return int(listener.getsockname()[1])
+
+
+def wait_for_browser_target(port: int, browser: subprocess.Popen[bytes]) -> dict[str, str]:
+    endpoint = f"http://127.0.0.1:{port}/json/list"
+    for _ in range(100):
+        if browser.poll() is not None:
+            raise AssertionError("chromium exited before opening its debugging endpoint")
+        try:
+            with urlopen(endpoint, timeout=0.1) as response:
+                targets = json.load(response)
+        except OSError:
+            time.sleep(0.05)
+            continue
+        page = next((target for target in targets if target["type"] == "page"), None)
+        if page:
+            return page
+    raise AssertionError("chromium did not open its debugging endpoint")
+
+
+class cdp_socket:
+    def __init__(self, url: str) -> None:
+        match = re.fullmatch(r"ws://([^:/]+):(\d+)(/.+)", url)
+        assert match, url
+        self.host, port, self.path = match.groups()
+        self.connection = socket.create_connection((self.host, int(port)), timeout=10)
+        self.connection.settimeout(10)
+        key = base64.b64encode(os.urandom(16)).decode()
+        request = "\r\n".join((
+            f"GET {self.path} HTTP/1.1",
+            f"Host: {self.host}:{port}",
+            "Upgrade: websocket",
+            "Connection: Upgrade",
+            f"Sec-WebSocket-Key: {key}",
+            "Sec-WebSocket-Version: 13",
+            "",
+            "",
+        )).encode()
+        self.connection.sendall(request)
+        response = self.connection.recv(4096).decode()
+        expected = base64.b64encode(hashlib.sha1(f"{key}258EAFA5-E914-47DA-95CA-C5AB0DC85B11".encode()).digest()).decode()
+        assert " 101 " in response and expected in response, response
+
+    def __enter__(self) -> "cdp_socket":
+        return self
+
+    def __exit__(self, *_args: object) -> None:
+        self.connection.close()
+
+    def send(self, payload: dict[str, object]) -> None:
+        encoded = json.dumps(payload).encode()
+        mask = os.urandom(4)
+        header = bytearray((0x81, 0x80))
+        if len(encoded) < 126:
+            header[1] |= len(encoded)
+        elif len(encoded) < 65536:
+            header[1] |= 126
+            header.extend(struct.pack("!H", len(encoded)))
+        else:
+            header[1] |= 127
+            header.extend(struct.pack("!Q", len(encoded)))
+        self.connection.sendall(bytes(header) + mask + bytes(value ^ mask[index % 4] for index, value in enumerate(encoded)))
+
+    def receive(self) -> dict[str, object]:
+        first, second = recv_exact(self.connection, 2)
+        length = second & 0x7f
+        if length == 126:
+            length = struct.unpack("!H", recv_exact(self.connection, 2))[0]
+        elif length == 127:
+            length = struct.unpack("!Q", recv_exact(self.connection, 8))[0]
+        mask = recv_exact(self.connection, 4) if second & 0x80 else b""
+        payload = recv_exact(self.connection, length)
+        if mask:
+            payload = bytes(value ^ mask[index % 4] for index, value in enumerate(payload))
+        assert first & 0x0f == 1
+        return json.loads(payload)
+
+
+def recv_exact(connection: socket.socket, size: int) -> bytes:
+    chunks = []
+    while size:
+        chunk = connection.recv(size)
+        assert chunk
+        chunks.append(chunk)
+        size -= len(chunk)
+    return b"".join(chunks)
+
+
+def cdp(connection: cdp_socket, method: str, params: dict[str, object] | None = None) -> dict[str, object]:
+    cdp.next_id += 1
+    message_id = cdp.next_id
+    connection.send({"id": message_id, "method": method, "params": params or {}})
+    while True:
+        message = connection.receive()
+        if message.get("id") == message_id:
+            assert "error" not in message, message
+            return message["result"]
+
+
+cdp.next_id = 0
+
+
+def navigate(connection: cdp_socket, url: str) -> None:
+    navigate.counter += 1
+    target = f"{url}?p6b_geometry={navigate.counter}"
+    cdp(connection, "Page.navigate", {"url": target})
+    for _ in range(100):
+        result = cdp(connection, "Runtime.evaluate", {"expression": "JSON.stringify({url: location.href, ready: document.readyState})"})
+        state = json.loads(result["result"]["value"])
+        if state == {"url": target, "ready": "complete"}:
+            return
+        time.sleep(0.05)
+    raise AssertionError(f"browser did not finish loading {target}")
+
+
+navigate.counter = 0
+
+
+def evaluate_geometry(connection: cdp_socket, activation: str, layout_class: str) -> dict[str, float | str | bool]:
+    expression = f'''(async () => {{
+        {activation}
+        await new Promise(resolve => setTimeout(resolve, 350));
+        const target = document.querySelector('main#main').getBoundingClientRect();
+        const nav = document.querySelector('.site-nav').getBoundingClientRect();
+        return {{ targetTop: target.top, navBottom: nav.bottom, focused: document.activeElement.tagName,
+            layoutPresent: Boolean(document.querySelector({json.dumps(layout_class)})) }};
+    }})()'''
+    result = cdp(connection, "Runtime.evaluate", {"expression": expression, "awaitPromise": True, "returnByValue": True})
+    return result["result"]["value"]
+
+
+def test_p6b_v02_active_donate_label_meets_normal_text_contrast() -> None:
+    source = (ROOT / "css/style.css").read_text(encoding="utf-8")
+    palette = css_declarations(source, ":root")
+    parser = SupportFormParser()
+    parser.feed((ROOT / "donate.html").read_text(encoding="utf-8"))
+    active_donate = [
+        attrs
+        for tag, attrs in parser.elements
+        if tag == "a"
+        and attrs.get("class")
+        and {"nav-donate", "active"} <= set(attrs["class"].split())
+    ]
+    assert len(active_donate) == 1
+    assert active_donate[0]["aria-current"] == "page"
+    active = css_declarations(source, ".nav-links .nav-donate.active")
+    donate = css_declarations(source, ".nav-links .nav-donate")
+    foreground = donate["color"].removesuffix(" !important")
+    background = active["background"]
+    assert foreground == "#fff"
+    assert background == "var(--red-dark)"
+    assert contrast_ratio(palette["--white"], palette[background.removeprefix("var(").removesuffix(")")]) >= 4.5
+
+
+def test_p6b_v04_submission_status_is_live_focusable_and_revealed() -> None:
+    parser = SupportFormParser()
+    parser.feed((ROOT / "support.html").read_text(encoding="utf-8"))
+    success = [attrs for _tag, attrs in parser.elements if "data-fs-success" in attrs]
+    form_error = [attrs for _tag, attrs in parser.elements if attrs.get("data-fs-error") is None and "data-fs-error" in attrs]
+    assert len(success) == len(form_error) == 1
+    assert success[0] | {"role": "status", "aria-live": "polite", "aria-atomic": "true", "tabindex": "-1"} == success[0]
+    assert form_error[0] | {"role": "alert", "aria-live": "assertive", "aria-atomic": "true", "tabindex": "-1"} == form_error[0]
+
+    assert run_form_harness("status") == {"focused": "status", "scrolled": "status"}
+
+
+def test_p6b_v05_server_field_errors_are_associated_announced_and_focused() -> None:
+    parser = SupportFormParser()
+    parser.feed((ROOT / "support.html").read_text(encoding="utf-8"))
+    fields = {
+        attrs["name"]: attrs
+        for tag, attrs in parser.elements
+        if tag in {"input", "textarea"} and "data-fs-field" in attrs
+    }
+    errors = {
+        attrs["data-fs-error"]: attrs
+        for _tag, attrs in parser.elements
+        if attrs.get("data-fs-error")
+    }
+    assert fields.keys() == errors.keys() == {"name", "email", "phone", "address", "message"}
+    for name, field in fields.items():
+        error = errors[name]
+        assert field["aria-describedby"] == error["id"]
+        assert error["role"] == "alert"
+        assert error["aria-live"] == "assertive"
+        assert error["aria-atomic"] == "true"
+
+    assert run_form_harness("field") == {"focused": "email", "scrolled": "email"}
+
+
+def run_navigation_harness() -> dict[str, object]:
+    script = r'''
+const fs = require('fs');
+const vm = require('vm');
+const clickHandlers = {};
+const main = {
+  attributes: {},
+  setAttribute(name, value) { this.attributes[name] = value; },
+  focus() { this.focused = true; },
+  scrollIntoView() { this.scrolled = true; },
+};
+const skip = { addEventListener(name, callback) { clickHandlers[name] = callback; } };
+const context = {
+  window: { scrollY: 0, addEventListener() {}, requestAnimationFrame(callback) { callback(); }, history: { pushState(_state, _title, hash) { this.hash = hash; } } },
+  document: {
+    querySelector(selector) {
+      if (selector === '.skip-link[href="#main"]') return skip;
+      if (selector === 'main#main') return main;
+      return null;
+    },
+    addEventListener(name, callback) { if (name === 'DOMContentLoaded') callback(); },
+    body: {
+      classList: {
+        compact: false,
+        add(name) { if (name === 'is-scrolled') this.compact = true; },
+        remove(name) { if (name === 'is-scrolled') this.compact = false; },
+      },
+    },
+  },
+};
+vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), context);
+const event = { preventDefault() { this.defaultPrevented = true; } };
+clickHandlers.click(event);
+console.log(JSON.stringify({
+  defaultPrevented: event.defaultPrevented === true,
+  focused: main.focused ? 'main' : '',
+  scrolled: main.scrolled ? 'main' : '',
+  hash: context.window.history.hash,
+  tabindex: main.attributes.tabindex,
+  navState: context.document.body.classList.compact ? 'compact' : 'tall',
+}));
+'''
+    result = subprocess.run(
+        ["node", "-e", script, str(ROOT / "js/nav.js")],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return json.loads(result.stdout)
+
+
+def run_form_harness(mode: str) -> dict[str, str]:
+    script = r'''
+const fs = require('fs');
+const vm = require('vm');
+const mode = process.argv[2];
+const form = {
+  listeners: {},
+  addEventListener(name, callback) { this.listeners[name] = callback; },
+  elements: { namedItem() { return field; } },
+};
+const field = target('email');
+const status = target('status');
+const fieldError = { dataset: { fsError: 'email' } };
+const feedbackRoot = {
+  querySelector(selector) {
+    if (selector.startsWith('[data-fs-error][data-fs-active]')) return mode === 'field' ? fieldError : null;
+    if (selector.startsWith('[data-fs-success]')) return mode === 'status' ? status : null;
+    return null;
+  },
+};
+let observer;
+const context = {
+  window: {},
+  formspree() {},
+  document: { querySelector(selector) { return selector === '#support-form' ? form : null; } },
+  HTMLElement: function HTMLElement() {},
+  MutationObserver: function MutationObserver(callback) { observer = callback; this.observe = function() {}; },
+  queueMicrotask(callback) { callback(); },
+};
+form.parentElement = feedbackRoot;
+Object.setPrototypeOf(field, context.HTMLElement.prototype);
+vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), context);
+form.listeners.submit();
+observer();
+const active = mode === 'field' ? field : status;
+console.log(JSON.stringify({ focused: active.focused || '', scrolled: active.scrolled || '' }));
+function target(name) {
+  return {
+    focus() { this.focused = name; },
+    scrollIntoView() { this.scrolled = name; },
+  };
+}
+'''
+    result = subprocess.run(
+        ["node", "-e", script, str(ROOT / "js/formspree-init.js"), mode],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return json.loads(result.stdout)
 
 
 def test_rejects_malformed_opening_marker(tmp_path: Path) -> None:
