@@ -1116,18 +1116,18 @@ CONTENT_TEXTS = {
         "Sign Up", "Thanks for signing up!", "The campaign will be in touch soon.", "Name", "*", "Email", "Phone", "(Optional)", "Address", "(Optional — helps with yard sign delivery)", "Message", "Ways you'd like to help", "Display a yard sign", "Host a meet & greet", "Host a fundraiser", "Knock on doors", "Other", "Paul has my permission to publicly list me as a Supporter", "Stay in touch", "I'd like to receive campaign email updates", "I'd like to receive text updates (opt-out anytime)", "Contribute", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
     ),
     "donate.html": (
-        "Donate — Dedinsky for Judge", "Your support makes a difference", "Every dollar helps Paul reach voters across Waukesha County. Contributions are processed securely through WinRed.", "Opens in a new tab.", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "More Ways to Help", "Display a yard sign, host a meet & greet, or knock on doors. Every conversation matters in a local race.", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer",
+        "Donate — Dedinsky for Judge", "Donate", "Your support makes a difference", "Every dollar helps Paul reach voters across Waukesha County. Contributions are processed securely through WinRed.", "Donate via WinRed →", "Opens in a new tab.", "Mailing address", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "More Ways to Help", "Can't Donate? You Can Still Help", "Display a yard sign, host a meet & greet, or knock on doors. Every conversation matters in a local race.", "Get Involved", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "© 2026 All rights reserved. · ·",
     ),
     "privacy.html": (
-        "Privacy Policy — Dedinsky for Judge", "Plain answers about the information you share with us", "Effective July 22, 2026.", "This site belongs to the Paul Dedinsky for Judge campaign. It exists to introduce Paul to Waukesha County voters, not for tracking purposes. Here's exactly what we collect and what we do with it.",
-        "Only what you choose to submit through the volunteer form on our Support page: your name, email, and optionally your phone number, address, a message, and which ways you'd like to help. Browsing the site requires no account and submits nothing.",
-        "Form submissions are delivered by , our form processor, and kept by the campaign in a private database. It is used by campaign volunteers to follow up with you by arranging yard signs, coordinating events, and sending the updates you opted into. We do not sell, rent, or share your information with anyone else.",
-        "Donations happen entirely on WinRed's website under — this site never sees your payment details. Campaign finance law requires donations to be reported under Wisconsin's disclosure rules.",
-        "None. This site sets no cookies and runs no analytics, advertising, or tracking scripts. Fonts and all code are served from our own domain. Like nearly every website, our hosting provider (Netlify) keeps standard server logs, including IP addresses, to serve pages and prevent abuse.",
-        "We contact you only in ways you opted into. To stop hearing from us, reply to any message or email the campaign and we'll take you off the list.", "Want your information corrected or deleted from our volunteer list? Email and we'll take care of it.", "This site is not directed at children under 13, and we don't knowingly collect their information. If this policy changes, the update appears on this page with a new effective date.", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+        "Privacy Policy — Dedinsky for Judge", "Privacy Policy", "Plain answers about the information you share with us", "Effective July 22, 2026.", "This site belongs to the Paul Dedinsky for Judge campaign. It exists to introduce Paul to Waukesha County voters, not for tracking purposes. Here's exactly what we collect and what we do with it.",
+        "What we collect", "Only what you choose to submit through the volunteer form on our Support page: your name, email, and optionally your phone number, address, a message, and which ways you'd like to help. Browsing the site requires no account and submits nothing.",
+        "Where it goes", "Form submissions are delivered by , our form processor, and kept by the campaign in a private database. It is used by campaign volunteers to follow up with you by arranging yard signs, coordinating events, and sending the updates you opted into. We do not sell, rent, or share your information with anyone else.", "Formspree",
+        "Donations happen entirely on WinRed's website under — this site never sees your payment details. Campaign finance law requires donations to be reported under Wisconsin's disclosure rules.", "WinRed's privacy policy",
+        "Cookies and tracking", "None. This site sets no cookies and runs no analytics, advertising, or tracking scripts. Fonts and all code are served from our own domain. Like nearly every website, our hosting provider (Netlify) keeps standard server logs, including IP addresses, to serve pages and prevent abuse.",
+        "Email and text updates", "We contact you only in ways you opted into. To stop hearing from us, reply to any message or email the campaign and we'll take you off the list.", "Your choices", "Want your information corrected or deleted from our volunteer list? Email and we'll take care of it.", "privacy@dedinsky4judge.com", "This site is not directed at children under 13, and we don't knowingly collect their information. If this policy changes, the update appears on this page with a new effective date.", "Donate", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "© 2026 All rights reserved. · ·",
     ),
     "404.html": (
-        "Page Not Found — Dedinsky for Judge", "404", "The page you're looking for doesn't exist or has been moved. Let's get you back on track.", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+        "Page Not Found — Dedinsky for Judge", "404", "Page Not Found", "The page you're looking for doesn't exist or has been moved. Let's get you back on track.", "Return to Home", "Donate", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "© 2026 All rights reserved. · ·",
     ),
 }
 
@@ -1141,7 +1141,9 @@ CONTENT_COUNTS = {
         "State Representative": 6,
     },
     "support.html": {"*": 2, "(Optional)": 2},
-    "donate.html": {"Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018": 2},
+    "donate.html": {"Donate": 3, "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018": 2},
+    "privacy.html": {"Donate": 2},
+    "404.html": {"Donate": 2},
 }
 
 EXPECTED_HEADINGS = {
