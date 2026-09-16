@@ -53,7 +53,12 @@ def css_declarations(source: str, selector: str) -> dict[str, str]:
 
 
 def relative_luminance(hex_color: str) -> float:
-    channels = [int(hex_color[index:index + 2], 16) / 255 for index in (1, 3, 5)]
+    match = re.fullmatch(r"#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})", hex_color)
+    assert match, hex_color
+    digits = match.group(1)
+    if len(digits) == 3:
+        digits = "".join(channel * 2 for channel in digits)
+    channels = [int(digits[index:index + 2], 16) / 255 for index in (0, 2, 4)]
     linear = [value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4 for value in channels]
     return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
 
@@ -212,13 +217,14 @@ def test_redirects_blocks_includes() -> None:
     assert rules == [["/_includes/*", "/404.html", "404!"]]
 
 
-def test_p6b_v01_focused_skip_link_stacks_above_fixed_navigation() -> None:
+def test_p6b_v01_focused_skip_link_stacks_above_fixed_navigation(tmp_path: Path) -> None:
     source = (ROOT / "css/style.css").read_text(encoding="utf-8")
     skip_z = int(css_declarations(source, ".skip-link")["z-index"])
     nav_z = int(css_declarations(source, ".site-nav")["z-index"])
     assert skip_z > nav_z
 
     nav_height = int(css_declarations(source, ":root")["--nav-height-tall"].removesuffix("px"))
+    assert nav_height > 0
     main_margin = css_declarations(source, "main")["scroll-margin-top"]
     extra = int(re.search(r"\+\s*(\d+)px", main_margin).group(1))
     assert main_margin.startswith("calc(var(--nav-height-tall)")
@@ -243,15 +249,27 @@ def test_p6b_v01_focused_skip_link_stacks_above_fixed_navigation() -> None:
         "tabindex": "-1",
         "navState": "compact",
     }
-    target_top = int(css_declarations(source, ":root")["--nav-height"].removesuffix("px")) + focus_offset
-    nav_bottom = int(css_declarations(source, ":root")["--nav-height"].removesuffix("px"))
-    assert target_top - nav_bottom > 0
+    measurements = run_browser_skip_geometry(
+        tmp_path,
+        routes=(("index.html", ".hero"),),
+        widths=(1280,),
+        states=("compact",),
+        paths=("focused-skip",),
+    )
+    assert len(measurements) == 1
+    measurement = measurements[0]
+    assert measurement["targetTop"] - measurement["navBottom"] >= 1, measurement
 
 
 def test_p6b_f03_browser_geometry_keeps_fragment_and_focused_skip_paths_distinct(tmp_path: Path) -> None:
     measurements = run_browser_skip_geometry(tmp_path)
     assert len(measurements) == 48
     for measurement in measurements:
+        assert measurement["viewportWidth"] == measurement["width"], measurement
+        if measurement["path"] == "fragment":
+            assert measurement["hash"] == "#main", measurement
+        else:
+            assert measurement["focused"] == "MAIN", measurement
         # 1px is the minimum baseline observed in P6b-fix3/clearance.tsv.
         assert measurement["targetTop"] - measurement["navBottom"] >= 1, measurement
         assert measurement["layoutPresent"] is True, measurement
@@ -266,7 +284,17 @@ def test_p6b_f03_browser_geometry_keeps_fragment_and_focused_skip_paths_distinct
         assert measurement["compactAtMeasure"] is expected_compact, measurement
 
 
-def run_browser_skip_geometry(tmp_path: Path) -> list[dict[str, object]]:
+def run_browser_skip_geometry(
+    tmp_path: Path,
+    routes: tuple[tuple[str, str], ...] = (
+        ("index.html", ".hero"),
+        ("about.html", ".page-header"),
+        ("404.html", ".error-section"),
+    ),
+    widths: tuple[int, ...] = (390, 412, 768, 1280),
+    states: tuple[str, ...] = ("tall", "compact"),
+    paths: tuple[str, ...] = ("fragment", "focused-skip"),
+) -> list[dict[str, object]]:
     server = ThreadingHTTPServer(("127.0.0.1", 0), partial(SilentRequestHandler, directory=str(ROOT)))
     Thread(target=server.serve_forever, daemon=True).start()
     port = reserve_port()
@@ -289,22 +317,19 @@ def run_browser_skip_geometry(tmp_path: Path) -> list[dict[str, object]]:
             cdp(connection, "Page.enable")
             cdp(connection, "Runtime.enable")
             measurements = []
-            for route, layout_class in (
-                ("index.html", ".hero"),
-                ("about.html", ".page-header"),
-                ("404.html", ".error-section"),
-            ):
-                for width in (390, 412, 768, 1280):
+            activations = {
+                "fragment": "location.hash = 'main';",
+                "focused-skip": "const skip = document.querySelector('.skip-link[href=\"#main\"]'); skip.focus(); skip.click();",
+            }
+            for route, layout_class in routes:
+                for width in widths:
                     cdp(connection, "Emulation.setDeviceMetricsOverride", {"width": width, "height": 1000, "deviceScaleFactor": 1, "mobile": False})
-                    for state in ("tall", "compact"):
-                        for path, activation in (
-                            ("fragment", "location.hash = 'main';"),
-                            ("focused-skip", "const skip = document.querySelector('.skip-link[href=\"#main\"]'); skip.focus(); skip.click();"),
-                        ):
+                    for state in states:
+                        for path in paths:
                             navigate(connection, f"http://127.0.0.1:{server.server_port}/{route}")
                             cdp(connection, "Runtime.evaluate", {"expression": f"document.body.classList.toggle('is-scrolled', {json.dumps(state == 'compact')});"})
                             compact_before = cdp(connection, "Runtime.evaluate", {"expression": "document.body.classList.contains('is-scrolled')", "returnByValue": True})["result"]["value"]
-                            measurement = evaluate_geometry(connection, activation, layout_class)
+                            measurement = evaluate_geometry(connection, activations[path], layout_class)
                             measurements.append({
                                 "route": route,
                                 "layoutClass": layout_class,
@@ -456,7 +481,8 @@ def evaluate_geometry(connection: cdp_socket, activation: str, layout_class: str
         await new Promise(resolve => setTimeout(resolve, 350));
         const target = document.querySelector('main#main').getBoundingClientRect();
         const nav = document.querySelector('.site-nav').getBoundingClientRect();
-        return {{ targetTop: target.top, navBottom: nav.bottom, focused: document.activeElement.tagName,
+        return {{ targetTop: target.top, navBottom: nav.bottom, viewportWidth: window.innerWidth,
+            hash: location.hash, focused: document.activeElement.tagName,
             layoutPresent: Boolean(document.querySelector({json.dumps(layout_class)})),
             compactAtMeasure: document.body.classList.contains('is-scrolled') }};
     }})()'''
@@ -482,9 +508,9 @@ def test_p6b_v02_active_donate_label_meets_normal_text_contrast() -> None:
     donate = css_declarations(source, ".nav-links .nav-donate")
     foreground = donate["color"].removesuffix(" !important")
     background = active["background"]
-    assert foreground == "#fff"
     assert background == "var(--red-dark)"
-    assert contrast_ratio(palette["--white"], palette[background.removeprefix("var(").removesuffix(")")]) >= 4.5
+    assert contrast_ratio(foreground, palette[background.removeprefix("var(").removesuffix(")")]) >= 4.5
+    assert foreground == "#fff"
 
 
 def test_p6b_v04_submission_status_is_live_focusable_and_revealed() -> None:
