@@ -2,8 +2,10 @@ import re
 import shutil
 import subprocess
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Callable
+from xml.etree import ElementTree
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -341,3 +343,194 @@ def test_accepts_equivalent_nav_script_serialization(tmp_path):
     spec = importlib.util.spec_from_file_location("render_tmp", site / "_includes" / "render.py")
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
     assert mod.validate_structures(page.read_text(encoding="utf-8")) == []
+
+
+EXPECTED_ENDORSEMENT_TIERS = {
+    "Statewide Officials": ("Scott Walker",),
+    "Wisconsin Supreme Court": (
+        "Hon. Annette Kingsland Ziegler",
+        "Hon. Rebecca Grassl Bradley",
+        "Hon. Daniel Kelly",
+    ),
+    "Wisconsin Court of Appeals, District II": (
+        "Hon. Mark Gundrum",
+        "Hon. Shelley A. Grogan",
+        "Hon. Maria Lazar",
+        "Hon. Anthony LoCoco",
+    ),
+    "Waukesha County Circuit Court": (
+        "Hon. Michael Aprahamian",
+        "Hon. Jennifer Dorow",
+        "Hon. Cody Horlacher",
+        "Hon. David Maas",
+        "Hon. Michael Maxwell",
+        "Hon. J. Arthur Melvin III",
+        "Hon. Jack Pitzo",
+        "Hon. Scott Wagner",
+        "Hon. Zach Wittchow",
+        "Hon. Michael Bohren",
+        "Hon. Kathryn Foster",
+    ),
+    "Additional Wisconsin Jurists": (
+        "Hon. T. Christopher Dee",
+        "Hon. Robert Dehring",
+        "Hon. Grant Scaife",
+        "Hon. Randy R. Koschnick",
+    ),
+    "State Senators": ("Julian Bradley", "Steve Nass", "Rob Hutton"),
+    "State Representatives": (
+        "Barb Dittrich",
+        "Adam Neylon",
+        "Chuck Wichgers",
+        "Scott Allen",
+        "Dan Knodl",
+        "Jim Piwowarczyk",
+    ),
+    "Local Officials": (
+        "Eric Severson",
+        "Lesli Boese",
+        "Tim Aicher",
+        "Matt Rosek",
+        "Jeff Pfannerstill",
+        "Steve Ponto",
+        "Gary Mahkorn",
+    ),
+    "Organizations and Businesses": (
+        "Milwaukee Police Association",
+        "Waukesha County Young Republicans",
+        "5 Riders Organization",
+        "Hernandez Roofing",
+    ),
+}
+EXPECTED_ENDORSEMENT_NOTES = {
+    "Scott Walker": "(Former)",
+    "Hon. Rebecca Grassl Bradley": "(Former)",
+    "Hon. Daniel Kelly": "(Former)",
+    "Hon. Michael Bohren": "(Retired)",
+    "Hon. Kathryn Foster": "(Retired)",
+    "Hon. Randy R. Koschnick": "(Former)",
+}
+VOID_ELEMENTS = {
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
+    "source", "track", "wbr",
+}
+
+
+class HtmlElement:
+    def __init__(self, tag: str, attributes=()):
+        self.tag = tag
+        self.attributes = dict(attributes)
+        self.children: list[HtmlElement] = []
+        self.text: list[str] = []
+
+
+class TreeParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.root = HtmlElement("document")
+        self.stack = [self.root]
+
+    def handle_starttag(self, tag: str, attributes) -> None:
+        node = HtmlElement(tag, attributes)
+        self.stack[-1].children.append(node)
+        if tag not in VOID_ELEMENTS:
+            self.stack.append(node)
+
+    def handle_startendtag(self, tag: str, attributes) -> None:
+        self.stack[-1].children.append(HtmlElement(tag, attributes))
+
+    def handle_endtag(self, tag: str) -> None:
+        assert self.stack[-1].tag == tag, (self.stack[-1].tag, tag)
+        self.stack.pop()
+
+    def handle_data(self, data: str) -> None:
+        self.stack[-1].text.append(data)
+
+
+def element_classes(node: HtmlElement) -> set[str]:
+    return set(node.attributes.get("class", "").split())
+
+
+def normalized_text(parts: list[str]) -> str:
+    return " ".join("".join(parts).split())
+
+
+def element_text(node: HtmlElement) -> str:
+    parts = list(node.text)
+    for child in node.children:
+        parts.append(element_text(child))
+    return normalized_text(parts)
+
+
+def children_with_class(node: HtmlElement, class_name: str) -> list[HtmlElement]:
+    return [child for child in node.children if class_name in element_classes(child)]
+
+
+def descendants_with_class(node: HtmlElement, class_name: str) -> list[HtmlElement]:
+    found = []
+    for child in node.children:
+        if class_name in element_classes(child):
+            found.append(child)
+        found.extend(descendants_with_class(child, class_name))
+    return found
+
+
+def only(nodes: list[HtmlElement]) -> HtmlElement:
+    assert len(nodes) == 1
+    return nodes[0]
+
+
+def endorsement_entries() -> list[tuple[str, str, str, str]]:
+    parser = TreeParser()
+    parser.feed((ROOT / "endorsements.html").read_text(encoding="utf-8"))
+    entries = []
+    for tier in descendants_with_class(parser.root, "endorser-tier"):
+        heading = element_text(only(children_with_class(tier, "endorser-tier-header")))
+        grid = only(children_with_class(tier, "endorser-grid"))
+        for endorser in children_with_class(grid, "endorser"):
+            name_node = only(children_with_class(endorser, "endorser-name"))
+            title_nodes = children_with_class(endorser, "endorser-title")
+            note_nodes = children_with_class(name_node, "endorser-note")
+            assert len(title_nodes) <= 1
+            assert len(note_nodes) <= 1
+            name = normalized_text(name_node.text)
+            title = normalized_text(title_nodes[0].text) if title_nodes else ""
+            note = element_text(note_nodes[0]) if note_nodes else ""
+            entries.append((name, title, note, heading))
+    return entries
+
+
+def test_endorsement_tier_membership_is_exact() -> None:
+    actual = {}
+    for name, _title, _note, tier in endorsement_entries():
+        actual.setdefault(tier, []).append(name)
+    assert {tier: tuple(names) for tier, names in actual.items()} == EXPECTED_ENDORSEMENT_TIERS
+
+
+def test_scott_walker_entry_shape_is_exact() -> None:
+    walker = [entry for entry in endorsement_entries() if entry[0] == "Scott Walker"]
+    assert walker == [("Scott Walker", "Governor of Wisconsin", "(Former)", "Statewide Officials")]
+
+
+def test_required_endorsement_name_set_and_count_are_exact() -> None:
+    names = [entry[0] for entry in endorsement_entries()]
+    expected = {name for tier in EXPECTED_ENDORSEMENT_TIERS.values() for name in tier}
+    assert len(names) == 43
+    assert len(names) == len(set(names))
+    assert set(names) == expected
+
+
+def test_endorsement_status_note_map_is_exact() -> None:
+    actual = {name: note for name, _title, note, _tier in endorsement_entries() if note}
+    assert actual == EXPECTED_ENDORSEMENT_NOTES
+
+
+def test_endorsements_sitemap_lastmod_is_current() -> None:
+    namespace = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+    sitemap = ElementTree.parse(ROOT / "sitemap.xml")
+    matches = []
+    for route in sitemap.findall("sm:url", namespace):
+        location = route.findtext("sm:loc", namespaces=namespace)
+        if location == "https://dedinsky4judge.com/endorsements":
+            matches.append(route.findtext("sm:lastmod", namespaces=namespace))
+    assert matches == ["2026-09-15"]
