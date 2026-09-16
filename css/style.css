@@ -1066,6 +1066,16 @@ body.is-scrolled .page-header {
   text-transform: uppercase;
 }
 
+.mailing-address {
+  font-style: normal;
+}
+
+.site-footer .mailing-address {
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
 .site-footer a {
   color: rgba(255,255,255,0.55);
   text-decoration: underline;
