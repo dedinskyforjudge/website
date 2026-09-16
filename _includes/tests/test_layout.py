@@ -212,7 +212,9 @@ def test_p6b_v01_focused_skip_link_stacks_above_fixed_navigation() -> None:
     main_margin = css_declarations(source, "main")["scroll-margin-top"]
     extra = int(re.search(r"\+\s*(\d+)px", main_margin).group(1))
     assert main_margin.startswith("calc(var(--nav-height-tall)")
-    assert nav_height + extra >= nav_height
+    assert extra > 0
+    focus_offset = int(css_declarations(source, "main:focus")["top"].removesuffix("px"))
+    assert focus_offset > 0
 
     for name in PAGES:
         parser = SupportFormParser()
@@ -222,21 +224,41 @@ def test_p6b_v01_focused_skip_link_stacks_above_fixed_navigation() -> None:
         assert skip_links == [{"class": "skip-link", "href": "#main"}], name
         assert len(mains) == 1, name
 
-    assert run_navigation_harness() == {
+    navigation = run_navigation_harness()
+    assert navigation == {
         "defaultPrevented": True,
         "focused": "main",
         "scrolled": "main",
         "hash": "#main",
         "tabindex": "-1",
+        "navState": "compact",
     }
+    target_top = int(css_declarations(source, ":root")["--nav-height"].removesuffix("px")) + focus_offset
+    nav_bottom = int(css_declarations(source, ":root")["--nav-height"].removesuffix("px"))
+    assert target_top - nav_bottom > 0
 
 
 def test_p6b_v02_active_donate_label_meets_normal_text_contrast() -> None:
     source = (ROOT / "css/style.css").read_text(encoding="utf-8")
     palette = css_declarations(source, ":root")
+    parser = SupportFormParser()
+    parser.feed((ROOT / "donate.html").read_text(encoding="utf-8"))
+    active_donate = [
+        attrs
+        for tag, attrs in parser.elements
+        if tag == "a"
+        and attrs.get("class")
+        and {"nav-donate", "active"} <= set(attrs["class"].split())
+    ]
+    assert len(active_donate) == 1
+    assert active_donate[0]["aria-current"] == "page"
     active = css_declarations(source, ".nav-links .nav-donate.active")
-    assert active["background"] == "var(--red-dark)"
-    assert contrast_ratio(palette["--white"], palette["--red-dark"]) >= 4.5
+    donate = css_declarations(source, ".nav-links .nav-donate")
+    foreground = donate["color"].removesuffix(" !important")
+    background = active["background"]
+    assert foreground == "#fff"
+    assert background == "var(--red-dark)"
+    assert contrast_ratio(palette["--white"], palette[background.removeprefix("var(").removesuffix(")")]) >= 4.5
 
 
 def test_p6b_v04_submission_status_is_live_focusable_and_revealed() -> None:
@@ -296,7 +318,13 @@ const context = {
       return null;
     },
     addEventListener(name, callback) { if (name === 'DOMContentLoaded') callback(); },
-    body: { classList: { add() {}, remove() {} } },
+    body: {
+      classList: {
+        compact: false,
+        add(name) { if (name === 'is-scrolled') this.compact = true; },
+        remove(name) { if (name === 'is-scrolled') this.compact = false; },
+      },
+    },
   },
 };
 vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), context);
@@ -308,6 +336,7 @@ console.log(JSON.stringify({
   scrolled: main.scrolled ? 'main' : '',
   hash: context.window.history.hash,
   tabindex: main.attributes.tabindex,
+  navState: context.document.body.classList.compact ? 'compact' : 'tall',
 }));
 '''
     result = subprocess.run(

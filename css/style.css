@@ -63,6 +63,11 @@ main {
   scroll-margin-top: calc(var(--nav-height-tall) + 20px);
 }
 
+main:focus {
+  position: relative;
+  top: 1px;
+}
+
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
 
