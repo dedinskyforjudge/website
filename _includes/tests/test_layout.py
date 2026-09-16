@@ -1,5 +1,6 @@
 import json
 import base64
+from collections import Counter
 from functools import partial
 import hashlib
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -12,6 +13,7 @@ import subprocess
 import sys
 from threading import Thread
 import time
+from urllib.parse import urlsplit
 from urllib.request import urlopen
 from html.parser import HTMLParser
 from pathlib import Path
@@ -1050,3 +1052,200 @@ def test_campaign_principles_are_third_level_headings_with_exact_text() -> None:
             principle,
             [node.tag for node in owners],
         )
+
+
+# This revision is the content baseline. The guards compare parsed semantics,
+# not source formatting, classes, or wrappers.
+CONTENT_GUARD_BASELINE = "18f4047"
+NON_CONTENT_TAGS = frozenset({"script", "style", "svg", "path", "source"})
+VOID_INPUT_TYPES = frozenset({"hidden"})
+
+
+def parse_html(source: str) -> TreeParser:
+    parser = TreeParser()
+    parser.feed(source)
+    parser.close()
+    return parser
+
+
+def baseline_page(name: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{CONTENT_GUARD_BASELINE}:{name}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    return result.stdout
+
+
+def walk_elements(node: HtmlElement) -> list[HtmlElement]:
+    found = []
+    for child in node.children:
+        found.append(child)
+        found.extend(walk_elements(child))
+    return found
+
+
+def direct_text_runs(root: HtmlElement) -> Counter[tuple[str, str]]:
+    return Counter(
+        (node.tag, normalized_text(node.text))
+        for node in walk_elements(root)
+        if node.tag not in NON_CONTENT_TAGS and normalized_text(node.text)
+    )
+
+
+def headings(root: HtmlElement) -> list[tuple[int, str]]:
+    return [
+        (int(node.tag[1]), element_text(node))
+        for node in walk_elements(root)
+        if re.fullmatch(r"h[1-6]", node.tag)
+    ]
+
+
+def anchors(root: HtmlElement) -> list[HtmlElement]:
+    return [node for node in walk_elements(root) if node.tag == "a" and node.attributes.get("href")]
+
+
+def page_for_local_path(path: str) -> str | None:
+    if path == "/":
+        return "index.html"
+    candidate = path.removeprefix("/")
+    if candidate in PAGES:
+        return candidate
+    if f"{candidate}.html" in PAGES:
+        return f"{candidate}.html"
+    return None
+
+
+def image_intentions(root: HtmlElement) -> Counter[tuple[str, str | None, str | None]]:
+    return Counter(
+        (node.attributes.get("src", ""), node.attributes.get("alt"), node.attributes.get("aria-hidden"))
+        for node in walk_elements(root)
+        if node.tag == "img" and (node.attributes.get("alt") == "" or node.attributes.get("aria-hidden") == "true")
+    )
+
+
+def element_name(node: HtmlElement) -> str:
+    if node.attributes.get("aria-label", "").strip():
+        return node.attributes["aria-label"].strip()
+    parts = list(node.text)
+    for child in node.children:
+        if child.tag == "img":
+            parts.append(child.attributes.get("alt", ""))
+        else:
+            parts.append(element_name(child))
+    return normalized_text(parts)
+
+
+def parent_map(root: HtmlElement) -> dict[int, HtmlElement]:
+    parents = {}
+    for node in walk_elements(root):
+        for child in node.children:
+            parents[id(child)] = node
+    return parents
+
+
+def control_name(node: HtmlElement, labels: dict[str, HtmlElement], parents: dict[int, HtmlElement]) -> str:
+    name = element_name(node)
+    if name:
+        return name
+    control_id = node.attributes.get("id")
+    if control_id and control_id in labels:
+        return element_name(labels[control_id])
+    ancestor = parents.get(id(node))
+    while ancestor:
+        if ancestor.tag == "label":
+            return element_name(ancestor)
+        ancestor = parents.get(id(ancestor))
+    return ""
+
+
+def interactive_control_names(root: HtmlElement) -> Counter[tuple[str, str]]:
+    nodes = walk_elements(root)
+    labels = {node.attributes["for"]: node for node in nodes if node.tag == "label" and node.attributes.get("for")}
+    parents = parent_map(root)
+    controls = [
+        node for node in nodes
+        if node.tag in {"a", "button", "select", "textarea"}
+        or (node.tag == "input" and node.attributes.get("type", "text").lower() not in VOID_INPUT_TYPES)
+    ]
+    return Counter(
+        (control.tag, control_name(control, labels, parents))
+        for control in controls
+        if control.attributes.get("aria-hidden") != "true"
+    )
+
+
+def test_campaign_content_runs_and_ownership_match_baseline() -> None:
+    for name in PAGES:
+        expected_root = parse_html(baseline_page(name)).root
+        actual_root = parse_html((ROOT / name).read_text(encoding="utf-8")).root
+        expected = direct_text_runs(expected_root)
+        actual = direct_text_runs(actual_root)
+        missing = expected - actual
+        unexpected = actual - expected
+        assert not missing and not unexpected, (name, "missing", list(missing.elements()), "unexpected", list(unexpected.elements()))
+
+        for (tag, text), count in expected.items():
+            owners = elements_owning_text(actual_root, text)
+            assert sum(owner.tag == tag for owner in owners) == count, (name, text, tag, [owner.tag for owner in owners])
+
+
+def test_campaign_heading_outline_matches_baseline() -> None:
+    for name in PAGES:
+        expected = headings(parse_html(baseline_page(name)).root)
+        actual = headings(parse_html((ROOT / name).read_text(encoding="utf-8")).root)
+        assert actual == expected, (name, "expected", expected, "actual", actual)
+        assert [level for level, _text in actual].count(1) == 1, (name, actual)
+        assert all(current <= previous + 1 for (previous, _), (current, _) in zip(actual, actual[1:])), (name, actual)
+
+
+def test_campaign_links_targets_and_image_alternatives_match_baseline() -> None:
+    baseline_external = Counter()
+    for name in PAGES:
+        expected_root = parse_html(baseline_page(name)).root
+        actual_root = parse_html((ROOT / name).read_text(encoding="utf-8")).root
+        baseline_external.update(
+            anchor.attributes["href"]
+            for anchor in anchors(expected_root)
+            if urlsplit(anchor.attributes["href"]).scheme or anchor.attributes["href"].startswith("//")
+        )
+        expected_links = Counter((anchor.attributes["href"], element_name(anchor)) for anchor in anchors(expected_root))
+        actual_links = Counter((anchor.attributes["href"], element_name(anchor)) for anchor in anchors(actual_root))
+        assert actual_links == expected_links, (name, "expected", expected_links, "actual", actual_links)
+        assert image_intentions(actual_root) == image_intentions(expected_root), name
+        for image in (node for node in walk_elements(actual_root) if node.tag == "img"):
+            alt = image.attributes.get("alt")
+            hidden = image.attributes.get("aria-hidden") == "true"
+            assert alt is not None, (name, image.attributes.get("src"))
+            assert alt.strip() or hidden or alt == "", (name, image.attributes.get("src"))
+
+        ids = {node.attributes["id"] for node in walk_elements(actual_root) if node.attributes.get("id")}
+        for anchor in anchors(actual_root):
+            href = anchor.attributes["href"]
+            target = urlsplit(href)
+            if target.scheme or href.startswith("//"):
+                continue
+            target_page = page_for_local_path(target.path) if target.path else name
+            assert target_page in PAGES, (name, href)
+            if target.fragment:
+                target_root = actual_root if target_page == name else parse_html((ROOT / target_page).read_text(encoding="utf-8")).root
+                target_ids = ids if target_page == name else {node.attributes["id"] for node in walk_elements(target_root) if node.attributes.get("id")}
+                assert target.fragment in target_ids, (name, href)
+
+    actual_external = Counter(
+        anchor.attributes["href"]
+        for name in PAGES
+        for anchor in anchors(parse_html((ROOT / name).read_text(encoding="utf-8")).root)
+        if urlsplit(anchor.attributes["href"]).scheme or anchor.attributes["href"].startswith("//")
+    )
+    assert actual_external == baseline_external, ("external hrefs", baseline_external - actual_external, actual_external - baseline_external)
+
+
+def test_campaign_interactive_controls_have_accessible_names() -> None:
+    for name in PAGES:
+        expected = interactive_control_names(parse_html(baseline_page(name)).root)
+        actual = interactive_control_names(parse_html((ROOT / name).read_text(encoding="utf-8")).root)
+        assert actual == expected, (name, "expected", expected, "actual", actual)
+        assert all(accessible_name for _tag, accessible_name in actual), (name, actual)
