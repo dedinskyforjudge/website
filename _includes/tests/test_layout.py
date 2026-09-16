@@ -257,6 +257,13 @@ def test_p6b_f03_browser_geometry_keeps_fragment_and_focused_skip_paths_distinct
         assert measurement["layoutPresent"] is True, measurement
         expected_focus = "BODY" if measurement["path"] == "fragment" else "MAIN"
         assert measurement["focused"] == expected_focus, measurement
+        # The compact nav state is a measured condition, not a label: a state the
+        # browser never entered would otherwise report as covered.
+        assert measurement["compactBefore"] is (measurement["state"] == "compact"), measurement
+        # Clicking the skip link scrolls, so the nav ends compact whatever it started as;
+        # fragment navigation does not scroll and leaves the starting state alone.
+        expected_compact = True if measurement["path"] == "focused-skip" else measurement["state"] == "compact"
+        assert measurement["compactAtMeasure"] is expected_compact, measurement
 
 
 def run_browser_skip_geometry(tmp_path: Path) -> list[dict[str, object]]:
@@ -295,7 +302,8 @@ def run_browser_skip_geometry(tmp_path: Path) -> list[dict[str, object]]:
                             ("focused-skip", "const skip = document.querySelector('.skip-link[href=\"#main\"]'); skip.focus(); skip.click();"),
                         ):
                             navigate(connection, f"http://127.0.0.1:{server.server_port}/{route}")
-                            cdp(connection, "Runtime.evaluate", {"expression": f"document.body.classList.toggle('is-scrolled', {state == 'compact'});"})
+                            cdp(connection, "Runtime.evaluate", {"expression": f"document.body.classList.toggle('is-scrolled', {json.dumps(state == 'compact')});"})
+                            compact_before = cdp(connection, "Runtime.evaluate", {"expression": "document.body.classList.contains('is-scrolled')", "returnByValue": True})["result"]["value"]
                             measurement = evaluate_geometry(connection, activation, layout_class)
                             measurements.append({
                                 "route": route,
@@ -303,6 +311,7 @@ def run_browser_skip_geometry(tmp_path: Path) -> list[dict[str, object]]:
                                 "width": width,
                                 "state": state,
                                 "path": path,
+                                "compactBefore": compact_before,
                                 **measurement,
                             })
             return measurements
@@ -417,7 +426,9 @@ def cdp(connection: cdp_socket, method: str, params: dict[str, object] | None = 
         message = connection.receive()
         if message.get("id") == message_id:
             assert "error" not in message, message
-            return message["result"]
+            result = message["result"]
+            assert "exceptionDetails" not in result, (method, params, result["exceptionDetails"])
+            return result
 
 
 cdp.next_id = 0
@@ -446,7 +457,8 @@ def evaluate_geometry(connection: cdp_socket, activation: str, layout_class: str
         const target = document.querySelector('main#main').getBoundingClientRect();
         const nav = document.querySelector('.site-nav').getBoundingClientRect();
         return {{ targetTop: target.top, navBottom: nav.bottom, focused: document.activeElement.tagName,
-            layoutPresent: Boolean(document.querySelector({json.dumps(layout_class)})) }};
+            layoutPresent: Boolean(document.querySelector({json.dumps(layout_class)})),
+            compactAtMeasure: document.body.classList.contains('is-scrolled') }};
     }})()'''
     result = cdp(connection, "Runtime.evaluate", {"expression": expression, "awaitPromise": True, "returnByValue": True})
     return result["result"]["value"]
