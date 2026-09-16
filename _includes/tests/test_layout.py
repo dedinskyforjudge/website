@@ -1016,3 +1016,37 @@ def test_endorsements_sitemap_lastmod_is_current() -> None:
         if location == "https://dedinsky4judge.com/endorsements":
             matches.append(route.findtext("sm:lastmod", namespaces=namespace))
     assert matches == ["2026-09-15"]
+
+
+CAMPAIGN_PRINCIPLES = (
+    "Experience That Matters",
+    "Integrity & Independence",
+    "Community Commitment",
+)
+
+
+def elements_owning_text(node: HtmlElement, text: str) -> list[HtmlElement]:
+    """Elements whose own direct text is exactly `text`, ignoring descendant text.
+
+    Ownership is what distinguishes a heading from its wrapper: the card div
+    around a principle contributes no text of its own, so only the heading is
+    returned. A principle rewritten as body copy is owned by that element
+    instead, which is how a demotion becomes visible here.
+    """
+    found = []
+    for child in node.children:
+        if normalized_text(child.text) == text:
+            found.append(child)
+        found.extend(elements_owning_text(child, text))
+    return found
+
+
+def test_campaign_principles_are_third_level_headings_with_exact_text() -> None:
+    parser = TreeParser()
+    parser.feed((ROOT / "index.html").read_text(encoding="utf-8"))
+    for principle in CAMPAIGN_PRINCIPLES:
+        owners = elements_owning_text(parser.root, principle)
+        assert [node.tag for node in owners] == ["h3"], (
+            principle,
+            [node.tag for node in owners],
+        )
