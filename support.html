@@ -134,35 +134,44 @@
           <div class="bar"></div>
         </div>
 
-        <div data-fs-success class="form-success" role="status" hidden>
+        <div data-fs-success class="form-success" role="status" aria-live="polite" aria-atomic="true" tabindex="-1"
+          hidden>
           <strong>Thanks for signing up!</strong> The campaign will be in touch soon.
         </div>
-        <div data-fs-error class="form-error" role="status"></div>
+        <div data-fs-error class="form-error" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1">
+        </div>
 
         <form id="support-form" class="support-form" action="https://formspree.io/f/mojyzvpo" method="POST">
           <div class="form-row">
             <label for="name">Name <span class="required">*</span></label>
-            <input type="text" id="name" name="name" data-fs-field autocomplete="name" required>
-            <span data-fs-error="name" class="field-error"></span>
+            <input type="text" id="name" name="name" data-fs-field autocomplete="name" aria-describedby="name-error"
+              required>
+            <span id="name-error" data-fs-error="name" class="field-error" role="alert" aria-live="assertive"
+              aria-atomic="true"></span>
           </div>
 
           <div class="form-row">
             <label for="email">Email <span class="required">*</span></label>
-            <input type="email" id="email" name="email" data-fs-field autocomplete="email" required>
-            <span data-fs-error="email" class="field-error"></span>
+            <input type="email" id="email" name="email" data-fs-field autocomplete="email"
+              aria-describedby="email-error" required>
+            <span id="email-error" data-fs-error="email" class="field-error" role="alert" aria-live="assertive"
+              aria-atomic="true"></span>
           </div>
 
           <div class="form-row">
             <label for="phone">Phone <span class="optional">(Optional)</span></label>
-            <input type="tel" id="phone" name="phone" data-fs-field autocomplete="tel" placeholder="(555) 555-5555">
-            <span data-fs-error="phone" class="field-error"></span>
+            <input type="tel" id="phone" name="phone" data-fs-field autocomplete="tel" placeholder="(555) 555-5555"
+              aria-describedby="phone-error">
+            <span id="phone-error" data-fs-error="phone" class="field-error" role="alert" aria-live="assertive"
+              aria-atomic="true"></span>
           </div>
 
           <div class="form-row">
             <label for="address">Address <span class="optional">(Optional — helps with yard sign delivery)</span></label>
             <input type="text" id="address" name="address" data-fs-field autocomplete="address-line1"
-              placeholder="Street, city, ZIP">
-            <span data-fs-error="address" class="field-error"></span>
+              placeholder="Street, city, ZIP" aria-describedby="address-error">
+            <span id="address-error" data-fs-error="address" class="field-error" role="alert" aria-live="assertive"
+              aria-atomic="true"></span>
           </div>
 
           <fieldset class="form-checkboxes">
@@ -180,8 +189,10 @@
           <div class="form-row">
             <label for="message">Message <span class="optional">(Optional)</span></label>
             <textarea id="message" name="message" data-fs-field rows="4"
-              placeholder="Tell us anything else you'd like the campaign to know."></textarea>
-            <span data-fs-error="message" class="field-error"></span>
+              placeholder="Tell us anything else you'd like the campaign to know."
+              aria-describedby="message-error"></textarea>
+            <span id="message-error" data-fs-error="message" class="field-error" role="alert" aria-live="assertive"
+              aria-atomic="true"></span>
           </div>
 
           <fieldset class="form-checkboxes">

@@ -30,6 +30,37 @@ MARKER_RE = re.compile(r"<!--\s*(/?)include:([A-Za-z]+)\s*-->")
 ANCHOR_RE = re.compile(r"<a\b[^>]*>", re.DOTALL)
 
 
+def css_declarations(source: str, selector: str) -> dict[str, str]:
+    match = re.search(rf"{re.escape(selector)}\s*\{{([^}}]+)\}}", source)
+    assert match, selector
+    return {
+        name.strip(): value.strip()
+        for declaration in match.group(1).split(";")
+        if ":" in declaration
+        for name, value in [declaration.split(":", 1)]
+    }
+
+
+def relative_luminance(hex_color: str) -> float:
+    channels = [int(hex_color[index:index + 2], 16) / 255 for index in (1, 3, 5)]
+    linear = [value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4 for value in channels]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+
+def contrast_ratio(first: str, second: str) -> float:
+    light, dark = sorted((relative_luminance(first), relative_luminance(second)), reverse=True)
+    return (light + 0.05) / (dark + 0.05)
+
+
+class SupportFormParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.elements: list[tuple[str, dict[str, str | None]]] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.elements.append((tag, dict(attrs)))
+
+
 def copy_site(tmp_path: Path) -> Path:
     site = tmp_path / "site"
     includes = site / "_includes"
@@ -168,6 +199,63 @@ def test_redirects_blocks_includes() -> None:
         if line.strip() and not line.lstrip().startswith("#")
     ]
     assert rules == [["/_includes/*", "/404.html", "404!"]]
+
+
+def test_p6b_v01_focused_skip_link_stacks_above_fixed_navigation() -> None:
+    source = (ROOT / "css/style.css").read_text(encoding="utf-8")
+    skip_z = int(css_declarations(source, ".skip-link")["z-index"])
+    nav_z = int(css_declarations(source, ".site-nav")["z-index"])
+    assert skip_z > nav_z
+
+
+def test_p6b_v02_active_donate_label_meets_normal_text_contrast() -> None:
+    source = (ROOT / "css/style.css").read_text(encoding="utf-8")
+    palette = css_declarations(source, ":root")
+    active = css_declarations(source, ".nav-links .nav-donate.active")
+    assert active["background"] == "var(--red-dark)"
+    assert contrast_ratio(palette["--white"], palette["--red-dark"]) >= 4.5
+
+
+def test_p6b_v04_submission_status_is_live_focusable_and_revealed() -> None:
+    parser = SupportFormParser()
+    parser.feed((ROOT / "support.html").read_text(encoding="utf-8"))
+    success = [attrs for _tag, attrs in parser.elements if "data-fs-success" in attrs]
+    form_error = [attrs for _tag, attrs in parser.elements if attrs.get("data-fs-error") is None and "data-fs-error" in attrs]
+    assert len(success) == len(form_error) == 1
+    assert success[0] | {"role": "status", "aria-live": "polite", "aria-atomic": "true", "tabindex": "-1"} == success[0]
+    assert form_error[0] | {"role": "alert", "aria-live": "assertive", "aria-atomic": "true", "tabindex": "-1"} == form_error[0]
+
+    script = (ROOT / "js/formspree-init.js").read_text(encoding="utf-8")
+    assert "submissionPending = true" in script
+    assert "[data-fs-success][data-fs-active]" in script
+    assert "scrollIntoView({ behavior: 'auto', block: 'center' })" in script
+
+
+def test_p6b_v05_server_field_errors_are_associated_announced_and_focused() -> None:
+    parser = SupportFormParser()
+    parser.feed((ROOT / "support.html").read_text(encoding="utf-8"))
+    fields = {
+        attrs["name"]: attrs
+        for tag, attrs in parser.elements
+        if tag in {"input", "textarea"} and "data-fs-field" in attrs
+    }
+    errors = {
+        attrs["data-fs-error"]: attrs
+        for _tag, attrs in parser.elements
+        if attrs.get("data-fs-error")
+    }
+    assert fields.keys() == errors.keys() == {"name", "email", "phone", "address", "message"}
+    for name, field in fields.items():
+        error = errors[name]
+        assert field["aria-describedby"] == error["id"]
+        assert error["role"] == "alert"
+        assert error["aria-live"] == "assertive"
+        assert error["aria-atomic"] == "true"
+
+    script = (ROOT / "js/formspree-init.js").read_text(encoding="utf-8")
+    assert ":not([data-fs-error=\"\"])" in script
+    assert "supportForm.elements.namedItem(fieldError.dataset.fsError)" in script
+    assert "focusAndReveal(field)" in script
 
 
 def test_rejects_malformed_opening_marker(tmp_path: Path) -> None:

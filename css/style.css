@@ -65,17 +65,18 @@ a { color: inherit; }
 /* Skip-to-main link — visually hidden until keyboard-focused */
 .skip-link {
   position: absolute;
-  top: -40px;
+  top: 0;
   left: 8px;
   background: var(--navy);
   color: #fff;
   padding: 8px 16px;
-  z-index: 200;
+  z-index: 1000;
   text-decoration: none;
   font-weight: 600;
   border-radius: 0 0 4px 4px;
+  transform: translateY(-100%);
 }
-.skip-link:focus { top: 0; }
+.skip-link:focus { transform: translateY(0); }
 
 
 /* ==========================================================================
@@ -85,7 +86,7 @@ a { color: inherit; }
 .site-nav {
   position: fixed;
   top: 0; left: 0; right: 0;
-  z-index: 1000;
+  z-index: 200;
   background: var(--white);
   border-bottom: 3px solid var(--red);
   height: var(--nav-height-tall);
@@ -160,6 +161,10 @@ body.is-scrolled .nav-logo img {
 }
 
 .nav-links .nav-donate:hover {
+  background: var(--red-dark);
+}
+
+.nav-links .nav-donate.active {
   background: var(--red-dark);
 }
 
