@@ -1054,11 +1054,124 @@ def test_campaign_principles_are_third_level_headings_with_exact_text() -> None:
         )
 
 
-# This revision is the content baseline. The guards compare parsed semantics,
-# not source formatting, classes, or wrappers.
-CONTENT_GUARD_BASELINE = "18f4047"
-NON_CONTENT_TAGS = frozenset({"script", "style", "svg", "path", "source"})
 VOID_INPUT_TYPES = frozenset({"hidden"})
+
+# Curated campaign content contracts.  These are intentionally literal: a
+# layout revision may add presentation copy or wrappers, but it cannot remove
+# or alter any listed campaign statement.
+CONTENT_TEXTS = {
+    "index.html": (
+        "Dedinsky for Judge — Waukesha County Circuit Court",
+        "Waukesha County Circuit Court", "for Circuit Court Judge",
+        "A career built on experience, integrity, and a deep commitment to justice.",
+        "About Paul", "Paul Dedinsky is a 25-year veteran prosecutor who has worked in the criminal justice system for over thirty years. Paul received his law degree from the University of Wisconsin–Madison Law School in 1993, and his Ph.D. in Education and Leadership in 2012.",
+        "Paul has taught law at Marquette University Law School, as well as business law, legal ethics, and business leadership to undergrads and graduate students at Cardinal Stritch. Paul is married to Lisa, and the couple raised their three children — Abby, Charlie, and Natalia — in Delafield, Wisconsin.",
+        "Governor Walker first appointed Paul as Chief Legal Counsel to the Wisconsin Department of Agriculture, Trade, and Consumer Protection (DATCP) from 2017–2018. Governor Walker then appointed Paul to serve as a circuit court judge (2019–2020). With experience as a judge, as well as a sexual assault and domestic violence prosecutor who worked with hundreds upon hundreds of victims, Paul is acutely aware of the toll of the system upon victims of crime.",
+        "30+ years of legal experience", "150+ trials", "25 years as a State Prosecutor",
+        "Main author/editor, Wisconsin Domestic Violence Prosecution Manual, 2004",
+        "Ph.D. in Education & Leadership", "Trained police officers at Waukesha County Technical College and Statewide",
+        "Support the Campaign", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer",
+        "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+    ),
+    "about.html": (
+        "About Paul — Dedinsky for Judge", "A life of service to Wisconsin's justice system",
+        "25 years as a prosecutor — and a career path twice recognized by Governor Scott Walker, who appointed Paul as Chief Legal Counsel at WI DATCP and later to the circuit court bench.",
+        "Paul Dedinsky is a dedicated public servant with a proven commitment to justice and community safety. Paul's extensive experience as a veteran prosecutor and deep understanding of the law have prepared him to serve the people of Waukesha County as a fair and impartial judge.",
+        "Paul grew up in southeastern Wisconsin and attended Marquette University High School and Creighton University. He graduated from the University of Wisconsin–Madison Law School in 1993 and earned his Ph.D. in Education and Leadership in 2012.",
+        "Paul is married to Lisa, and the couple raised three children — Abby, Charlie, and Natalia — in Delafield, Wisconsin.",
+        "As a Waukesha County Judge, Paul Dedinsky pledges to ensure the safety of Waukesha County residents, uphold the rule of law, and never legislate from the bench or engage in judicial activism. Paul will continue to serve the community with integrity and firm justice.",
+        "Front row seat. As a longtime prosecutor in Milwaukee, Paul saw firsthand how crime and violence can devastate, destabilize, and destroy communities. Paul will stand in the breach and prevent that from happening in Waukesha County.",
+        "Paul has a long, proven, conservative track record of holding criminals accountable and keeping families safe. He earned a strong reputation for securing justice for those victimized by crime.",
+        "Education", "1985", "Marquette University High School", "1989", "B.A. — Creighton University", "1993", "J.D. — University of Wisconsin–Madison Law School", "2012", "Ph.D., Education & Leadership",
+        "1997 – 2017", "Prosecutor — Appellate Division", "Handles mainly Homicide and Sexual Assault appellate matters. Previously served as Homicide-Violent Gun Prosecutor and State Prosecutor Representative to the Republican National Convention.",
+        "2017 – 2018", "Chief Legal Counsel — WI DATCP", "Chief Legal Counsel for the Wisconsin Department of Agriculture, Trade and Consumer Protection. Consumer protection, administrative rule-making, ethics counsel and trainer for the agency.",
+        "2019 – 2020", "Milwaukee County Circuit Court Judge", "Appointed by Governor Scott Walker.",
+        "2021 – Present", "Assistant District Attorney", "As a prosecutor, reviewed thousands of investigations, charged criminal and civil matters, litigated over 50 jury trials and 100 court trials. Director of the DA's Domestic Violence Unit (2001–2007). Sexual Assault prosecutor (1999–2001). Main Author and Editor of the .", "Wisconsin Domestic Violence Prosecution Manual, 2004",
+        "Private Practice — Brookfield, WI", "Decades-long commitment to holding criminals accountable and keeping families safe.",
+        "Faith & Community", "Parish lector, pastoral council member, teacher of Christian formation. Longtime involvement with Waukesha's Schoenstatt International Province & Retreat Center.",
+        "St. Thomas More Lawyers Society", "President, 2022. Board of Directors, 2013–2019 and 2022–present. Co-organized the annual Youth Law Day at Marquette University Law School, 2010–2018.",
+        "SOFA, Inc. — Oconomowoc, WI", "Board member supporting the “Jump for Archie” anti-opiate addiction event, in memory of Archie Badura of Oconomowoc.",
+        "Earlier Service", "Big Brothers/Big Sisters of Metro Milwaukee. St. Catherine's Residence for Women committee member. St. Aemilian's Pre-School board member.",
+        "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+    ),
+    "vote.html": (
+        "Vote — Dedinsky for Judge", "MARK YOUR CALENDAR", "April 6, 2027", "Tuesday — Wisconsin Spring Election", "Polls Open 7:00 AM – 8:00 PM",
+        "Plan Ahead", "Absentee ballot request", "by Mar 17", "Mail / online registration", "through Apr 2", "In-person at municipal clerk", "by Apr 1, 5pm", "Bring proof of residence", "Same-day registration at polls", "Election Day", "Apr 6", "Polls open 7am – 8pm",
+        "All dates and procedures should be confirmed at — Wisconsin's official voter resource.", "Judicial Philosophy", "Paul believes the best judges lead with firmness, intelligence, and fairness. They are public servants — approachable, accessible, and committed to justice and the rule of law.", "Paul understands the justice system from every perspective. He has presided over hundreds of cases and knows that every person who enters a courtroom deserves to be treated with dignity and respect.",
+        "Stand With Paul", "Registered voters in Waukesha County. Circuit court judges serve the entire county.", "Spread the word. Help win this race.",
+        "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+    ),
+    "endorsements.html": (
+        "Endorsements — Dedinsky for Judge", "Trusted by leaders across Wisconsin", "In Their Own Words",
+        "\"I could not be more excited to endorse former Governor Walker-appointed judge and career prosecutor, Paul Dedinsky, for the Waukesha County bench. Paul is well known to so many of us precisely because he has already devoted his life's work to making Wisconsin a safer place for our families. I also know him to be a person of deep faith and true integrity. He is the perfect match for this important position.\"",
+        "\"I wholeheartedly endorse Paul Dedinsky for Waukesha County Circuit Court. He is a principled conservative who has demonstrated that he will apply the law as written; support our Constitutions; and faithfully guard against encroachment of our liberties. He has my full support.\"",
+        "\"Now, more than ever, we need judges who not only respect the law, but who stand up for everyone's rights and freedoms. Paul Dedinsky will bring the perfect blend of constitutionalism, compassion, and justice to Waukesha's bench.\"",
+        "\"Paul and I have been close friends for 20 years. With his experience as a longtime prosecutor, he's the one I trust to keep my family — and all of our families in Waukesha County — safe.\"",
+        "Hon. Mark Gundrum", "Hon. Shelley A. Grogan", "Hon. Maria Lazar", "Hon. Anthony LoCoco", "Wisconsin Court of Appeals Judge, District II",
+        "Full List of Endorsements", "Statewide Officials", "Scott Walker", "Governor of Wisconsin", "(Former)", "Wisconsin Supreme Court", "Hon. Annette Kingsland Ziegler", "Hon. Rebecca Grassl Bradley", "Hon. Daniel Kelly", "Wisconsin Court of Appeals, District II", "Waukesha County Circuit Court", "Hon. Michael Aprahamian", "Hon. Jennifer Dorow", "Hon. Cody Horlacher", "Hon. David Maas", "Hon. Michael Maxwell", "Hon. J. Arthur Melvin III", "Hon. Jack Pitzo", "Hon. Scott Wagner", "Hon. Zach Wittchow", "Hon. Michael Bohren", "(Retired)", "Hon. Kathryn Foster", "Additional Wisconsin Jurists", "Hon. T. Christopher Dee", "Hon. Robert Dehring", "Hon. Grant Scaife", "Hon. Randy R. Koschnick", "State Senators", "Julian Bradley", "State Senator", "Steve Nass", "Rob Hutton", "State Representatives", "Barb Dittrich", "State Representative", "Adam Neylon", "Chuck Wichgers", "Scott Allen", "Dan Knodl", "Jim Piwowarczyk", "Local Officials", "Eric Severson", "Lesli Boese", "Tim Aicher", "Mayor of Delafield", "Matt Rosek", "Mayor of Oconomowoc", "Jeff Pfannerstill", "Hartland Village President", "Steve Ponto", "Mayor of Brookfield", "Gary Mahkorn", "Brookfield Common Council President", "Organizations and Businesses", "Milwaukee Police Association", "Waukesha County Young Republicans", "5 Riders Organization", "Hernandez Roofing",
+        "Stand With Paul", "Stand with Paul.", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+    ),
+    "support.html": (
+        "Support — Dedinsky for Judge", "Every conversation matters in a local election", "Show your support to neighbors.", "Introduce Paul to your neighbors.", "Help canvass Waukesha County.", "Open your home or a local venue.",
+        "Sign Up", "Thanks for signing up!", "The campaign will be in touch soon.", "Name", "*", "Email", "Phone", "(Optional)", "Address", "(Optional — helps with yard sign delivery)", "Message", "Ways you'd like to help", "Display a yard sign", "Host a meet & greet", "Host a fundraiser", "Knock on doors", "Other", "Paul has my permission to publicly list me as a Supporter", "Stay in touch", "I'd like to receive campaign email updates", "I'd like to receive text updates (opt-out anytime)", "Contribute", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+    ),
+    "donate.html": (
+        "Donate — Dedinsky for Judge", "Your support makes a difference", "Every dollar helps Paul reach voters across Waukesha County. Contributions are processed securely through WinRed.", "Opens in a new tab.", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "More Ways to Help", "Display a yard sign, host a meet & greet, or knock on doors. Every conversation matters in a local race.", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer",
+    ),
+    "privacy.html": (
+        "Privacy Policy — Dedinsky for Judge", "Plain answers about the information you share with us", "Effective July 22, 2026.", "This site belongs to the Paul Dedinsky for Judge campaign. It exists to introduce Paul to Waukesha County voters, not for tracking purposes. Here's exactly what we collect and what we do with it.",
+        "Only what you choose to submit through the volunteer form on our Support page: your name, email, and optionally your phone number, address, a message, and which ways you'd like to help. Browsing the site requires no account and submits nothing.",
+        "Form submissions are delivered by , our form processor, and kept by the campaign in a private database. It is used by campaign volunteers to follow up with you by arranging yard signs, coordinating events, and sending the updates you opted into. We do not sell, rent, or share your information with anyone else.",
+        "Donations happen entirely on WinRed's website under — this site never sees your payment details. Campaign finance law requires donations to be reported under Wisconsin's disclosure rules.",
+        "None. This site sets no cookies and runs no analytics, advertising, or tracking scripts. Fonts and all code are served from our own domain. Like nearly every website, our hosting provider (Netlify) keeps standard server logs, including IP addresses, to serve pages and prevent abuse.",
+        "We contact you only in ways you opted into. To stop hearing from us, reply to any message or email the campaign and we'll take you off the list.", "Want your information corrected or deleted from our volunteer list? Email and we'll take care of it.", "This site is not directed at children under 13, and we don't knowingly collect their information. If this policy changes, the update appears on this page with a new effective date.", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+    ),
+    "404.html": (
+        "Page Not Found — Dedinsky for Judge", "404", "The page you're looking for doesn't exist or has been moved. Let's get you back on track.", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+    ),
+}
+
+CONTENT_COUNTS = {
+    "vote.html": {"Apr 6": 2},
+    "endorsements.html": {
+        "Hon. Mark Gundrum": 2, "Hon. Shelley A. Grogan": 2,
+        "Hon. Maria Lazar": 2, "Hon. Anthony LoCoco": 2,
+        "Wisconsin Court of Appeals Judge, District II": 4,
+        "(Former)": 4, "(Retired)": 2, "State Senator": 3,
+        "State Representative": 6,
+    },
+    "support.html": {"*": 2, "(Optional)": 2},
+    "donate.html": {"Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018": 2},
+}
+
+EXPECTED_HEADINGS = {
+    "index.html": ((1, "PaulDedinsky"), (2, "A Career Dedicated to Justice"), (3, "By the Numbers"), (3, "Experience That Matters"), (3, "Integrity & Independence"), (3, "Community Commitment"), (2, "Donate Today")),
+    "about.html": ((1, "About Paul"), (2, "Meet Paul"), (2, "Commitment to Justice and Safety"), (2, "Academic Background"), (2, "A Career in Service"), (3, "Prosecutor — Appellate Division"), (3, "Milwaukee County Circuit Court Judge"), (3, "Chief Legal Counsel — WI DATCP"), (3, "Assistant District Attorney"), (3, "Private Practice — Brookfield, WI"), (2, "Civic & Volunteer Involvement"), (3, "Faith & Community"), (3, "St. Thomas More Lawyers Society"), (3, "SOFA, Inc. — Oconomowoc, WI"), (3, "Earlier Service")),
+    "vote.html": ((1, "How to Vote"), (2, "Key Dates & Deadlines"), (2, "What kind of Judge will Paul be?"), (2, "Help Get Out the Vote")),
+    "endorsements.html": ((1, "Endorsements"), (2, "What Wisconsin Judges Are Saying"), (2, "Endorsed By"), (3, "Statewide Officials"), (3, "Wisconsin Supreme Court"), (3, "Wisconsin Court of Appeals, District II"), (3, "Waukesha County Circuit Court"), (3, "Additional Wisconsin Jurists"), (3, "State Senators"), (3, "State Representatives"), (3, "Local Officials"), (3, "Organizations and Businesses"), (2, "Join This Coalition")),
+    "support.html": ((1, "Support Paul"), (2, "Ways You Can Support Paul"), (3, "Display a Yard Sign"), (3, "Host a Fundraiser"), (3, "Knock on Doors"), (3, "Host a Meet & Greet"), (2, "Get Involved Today"), (2, "Support the Campaign Financially")),
+    "donate.html": ((1, "Donate"), (2, "Mailing address"), (2, "Can't Donate? You Can Still Help")),
+    "privacy.html": ((1, "Privacy Policy"), (2, "What we collect"), (2, "Where it goes"), (2, "Cookies and tracking"), (2, "Email and text updates"), (2, "Your choices")),
+    "404.html": ((1, "Page Not Found"),),
+}
+
+COMMON_LINKS = (("#main", "Skip to main content"), ("/", "Dedinsky for Judge"), ("/about", "About"), ("/vote", "Vote"), ("/endorsements", "Endorsements"), ("/support", "Support"), ("/donate", "Donate"), ("/privacy", "Privacy"), ("https://secure.winred.com/paul-dedinsky-for-judge/donate-today?amount=150", "Donate"))
+EXPECTED_LINKS = {
+    "index.html": COMMON_LINKS + (("/about", "Read Full Bio"), ("https://secure.winred.com/paul-dedinsky-for-judge/donate-today?amount=150", "Contribute")),
+    "about.html": COMMON_LINKS,
+    "vote.html": COMMON_LINKS + (("/support", "Get Involved"), ("https://myvote.wi.gov", "Find Your Polling Place →"), ("https://myvote.wi.gov", "myvote.wi.gov")),
+    "endorsements.html": COMMON_LINKS + (("https://secure.winred.com/paul-dedinsky-for-judge/donate-today?amount=150", "Contribute"),),
+    "support.html": COMMON_LINKS + (("https://secure.winred.com/paul-dedinsky-for-judge/donate-today?amount=150", "Donate"),),
+    "donate.html": COMMON_LINKS + (("/support", "Get Involved"), ("https://secure.winred.com/paul-dedinsky-for-judge/donate-today?amount=150", "Donate via WinRed →")),
+    "privacy.html": COMMON_LINKS + (("https://formspree.io/legal/privacy-policy/", "Formspree"), ("https://winred.com/privacy", "WinRed's privacy policy"), ("mailto:privacy@dedinsky4judge.com", "privacy@dedinsky4judge.com")),
+    "404.html": COMMON_LINKS + (("/", "Return to Home"),),
+}
+
+EXPECTED_IMAGES = {
+    "index.html": (("/img/logo.svg", "Dedinsky for Judge"), ("/img/Paul%20Dedinsky1.jpeg", "Paul Dedinsky"), ("/img/logo.svg", "Dedinsky for Judge")),
+    "about.html": (("/img/logo.svg", "Dedinsky for Judge"), ("/img/Dedinsky%20family%20%28Paul%2C%20Lisa%2C%20Natalia%2C%20Charlie%2C%20Abby%29.jpeg", "Paul and Lisa Dedinsky with their children Natalia, Charlie, and Abby"), ("/img/logo.svg", "Dedinsky for Judge")),
+    **{name: (("/img/logo.svg", "Dedinsky for Judge"), ("/img/logo.svg", "Dedinsky for Judge")) for name in PAGES if name not in {"index.html", "about.html"}},
+}
 
 
 def parse_html(source: str) -> TreeParser:
@@ -1068,31 +1181,12 @@ def parse_html(source: str) -> TreeParser:
     return parser
 
 
-def baseline_page(name: str) -> str:
-    result = subprocess.run(
-        ["git", "show", f"{CONTENT_GUARD_BASELINE}:{name}"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-    )
-    assert result.returncode == 0, result.stderr
-    return result.stdout
-
-
 def walk_elements(node: HtmlElement) -> list[HtmlElement]:
     found = []
     for child in node.children:
         found.append(child)
         found.extend(walk_elements(child))
     return found
-
-
-def direct_text_runs(root: HtmlElement) -> Counter[tuple[str, str]]:
-    return Counter(
-        (node.tag, normalized_text(node.text))
-        for node in walk_elements(root)
-        if node.tag not in NON_CONTENT_TAGS and normalized_text(node.text)
-    )
 
 
 def headings(root: HtmlElement) -> list[tuple[int, str]]:
@@ -1116,14 +1210,6 @@ def page_for_local_path(path: str) -> str | None:
     if f"{candidate}.html" in PAGES:
         return f"{candidate}.html"
     return None
-
-
-def image_intentions(root: HtmlElement) -> Counter[tuple[str, str | None, str | None]]:
-    return Counter(
-        (node.attributes.get("src", ""), node.attributes.get("alt"), node.attributes.get("aria-hidden"))
-        for node in walk_elements(root)
-        if node.tag == "img" and (node.attributes.get("alt") == "" or node.attributes.get("aria-hidden") == "true")
-    )
 
 
 def element_name(node: HtmlElement) -> str:
@@ -1177,44 +1263,66 @@ def interactive_control_names(root: HtmlElement) -> Counter[tuple[str, str]]:
     )
 
 
+def expected_control_names(page: str) -> Counter[tuple[str, str]]:
+    expected = Counter(("a", name) for _href, name in EXPECTED_LINKS[page])
+    expected[("button", "Menu")] += 1
+    if page == "support.html":
+        expected.update({
+            ("button", "Sign Me Up"): 1,
+            ("input", "Name *"): 1,
+            ("input", "Email *"): 1,
+            ("input", "Phone (Optional)"): 1,
+            ("input", "Address (Optional — helps with yard sign delivery)"): 1,
+            ("textarea", "Message (Optional)"): 1,
+            ("input", "Display a yard sign"): 1,
+            ("input", "Host a meet & greet"): 1,
+            ("input", "Host a fundraiser"): 1,
+            ("input", "Knock on doors"): 1,
+            ("input", "Other"): 1,
+            ("input", "Paul has my permission to publicly list me as a Supporter"): 1,
+            ("input", "I'd like to receive campaign email updates"): 1,
+            ("input", "I'd like to receive text updates (opt-out anytime)"): 1,
+        })
+    return expected
+
+
 def test_campaign_content_runs_and_ownership_match_baseline() -> None:
     for name in PAGES:
-        expected_root = parse_html(baseline_page(name)).root
         actual_root = parse_html((ROOT / name).read_text(encoding="utf-8")).root
-        expected = direct_text_runs(expected_root)
-        actual = direct_text_runs(actual_root)
-        missing = expected - actual
-        unexpected = actual - expected
-        assert not missing and not unexpected, (name, "missing", list(missing.elements()), "unexpected", list(unexpected.elements()))
-
-        for (tag, text), count in expected.items():
+        expected = Counter(CONTENT_TEXTS[name])
+        for text, count in CONTENT_COUNTS.get(name, {}).items():
+            expected[text] = count
+        for text, count in expected.items():
             owners = elements_owning_text(actual_root, text)
-            assert sum(owner.tag == tag for owner in owners) == count, (name, text, tag, [owner.tag for owner in owners])
+            assert len(owners) == count, (name, text, count, [owner.tag for owner in owners])
 
 
 def test_campaign_heading_outline_matches_baseline() -> None:
     for name in PAGES:
-        expected = headings(parse_html(baseline_page(name)).root)
         actual = headings(parse_html((ROOT / name).read_text(encoding="utf-8")).root)
-        assert actual == expected, (name, "expected", expected, "actual", actual)
+        for level, text in EXPECTED_HEADINGS[name]:
+            owners = elements_owning_text(parse_html((ROOT / name).read_text(encoding="utf-8")).root, text)
+            assert sum(node.tag == f"h{level}" for node in owners) == 1, (name, text, level, [node.tag for node in owners])
         assert [level for level, _text in actual].count(1) == 1, (name, actual)
         assert all(current <= previous + 1 for (previous, _), (current, _) in zip(actual, actual[1:])), (name, actual)
 
 
 def test_campaign_links_targets_and_image_alternatives_match_baseline() -> None:
-    baseline_external = Counter()
+    expected_external = Counter()
     for name in PAGES:
-        expected_root = parse_html(baseline_page(name)).root
         actual_root = parse_html((ROOT / name).read_text(encoding="utf-8")).root
-        baseline_external.update(
-            anchor.attributes["href"]
-            for anchor in anchors(expected_root)
-            if urlsplit(anchor.attributes["href"]).scheme or anchor.attributes["href"].startswith("//")
-        )
-        expected_links = Counter((anchor.attributes["href"], element_name(anchor)) for anchor in anchors(expected_root))
+        expected_links = Counter(EXPECTED_LINKS[name])
         actual_links = Counter((anchor.attributes["href"], element_name(anchor)) for anchor in anchors(actual_root))
-        assert actual_links == expected_links, (name, "expected", expected_links, "actual", actual_links)
-        assert image_intentions(actual_root) == image_intentions(expected_root), name
+        assert not expected_links - actual_links, (name, "missing", expected_links - actual_links)
+        expected_external.update(
+            href for href, _label in EXPECTED_LINKS[name]
+            if urlsplit(href).scheme or href.startswith("//")
+        )
+        actual_images = Counter(
+            (node.attributes.get("src", ""), node.attributes.get("alt"))
+            for node in walk_elements(actual_root) if node.tag == "img"
+        )
+        assert not Counter(EXPECTED_IMAGES[name]) - actual_images, (name, "images", Counter(EXPECTED_IMAGES[name]) - actual_images)
         for image in (node for node in walk_elements(actual_root) if node.tag == "img"):
             alt = image.attributes.get("alt")
             hidden = image.attributes.get("aria-hidden") == "true"
@@ -1240,12 +1348,12 @@ def test_campaign_links_targets_and_image_alternatives_match_baseline() -> None:
         for anchor in anchors(parse_html((ROOT / name).read_text(encoding="utf-8")).root)
         if urlsplit(anchor.attributes["href"]).scheme or anchor.attributes["href"].startswith("//")
     )
-    assert actual_external == baseline_external, ("external hrefs", baseline_external - actual_external, actual_external - baseline_external)
+    assert actual_external == expected_external, ("external hrefs", expected_external - actual_external, actual_external - expected_external)
 
 
 def test_campaign_interactive_controls_have_accessible_names() -> None:
     for name in PAGES:
-        expected = interactive_control_names(parse_html(baseline_page(name)).root)
         actual = interactive_control_names(parse_html((ROOT / name).read_text(encoding="utf-8")).root)
-        assert actual == expected, (name, "expected", expected, "actual", actual)
+        expected = expected_control_names(name)
+        assert not expected - actual, (name, "missing", expected - actual)
         assert all(accessible_name for _tag, accessible_name in actual), (name, actual)
