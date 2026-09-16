@@ -1,8 +1,18 @@
 import json
+import base64
+from functools import partial
+import hashlib
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+import os
 import re
 import shutil
+import socket
+import struct
 import subprocess
 import sys
+from threading import Thread
+import time
+from urllib.request import urlopen
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Callable
@@ -236,6 +246,198 @@ def test_p6b_v01_focused_skip_link_stacks_above_fixed_navigation() -> None:
     target_top = int(css_declarations(source, ":root")["--nav-height"].removesuffix("px")) + focus_offset
     nav_bottom = int(css_declarations(source, ":root")["--nav-height"].removesuffix("px"))
     assert target_top - nav_bottom > 0
+
+
+def test_p6b_f03_browser_geometry_keeps_fragment_and_focused_skip_paths_distinct(tmp_path: Path) -> None:
+    measurements = run_browser_skip_geometry(tmp_path)
+    assert len(measurements) == 8
+    for measurement in measurements:
+        fragment = measurement["fragment"]
+        focused = measurement["focused"]
+        assert fragment["targetTop"] - fragment["navBottom"] > 0, measurement
+        assert focused["targetTop"] - focused["navBottom"] > 0, measurement
+        assert fragment["focused"] == "BODY", measurement
+        assert focused["focused"] == "MAIN", measurement
+
+
+def run_browser_skip_geometry(tmp_path: Path) -> list[dict[str, object]]:
+    server = ThreadingHTTPServer(("127.0.0.1", 0), partial(SilentRequestHandler, directory=str(ROOT)))
+    Thread(target=server.serve_forever, daemon=True).start()
+    port = reserve_port()
+    browser = subprocess.Popen(
+        [
+            "chromium",
+            "--headless=new",
+            "--no-sandbox",
+            "--disable-gpu",
+            f"--remote-debugging-port={port}",
+            f"--user-data-dir={tmp_path / 'chromium-profile'}",
+            "about:blank",
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        target = wait_for_browser_target(port, browser)
+        with cdp_socket(target["webSocketDebuggerUrl"]) as connection:
+            cdp(connection, "Page.enable")
+            cdp(connection, "Runtime.enable")
+            measurements = []
+            for width in (390, 412, 768, 1280):
+                cdp(connection, "Emulation.setDeviceMetricsOverride", {"width": width, "height": 1000, "deviceScaleFactor": 1, "mobile": False})
+                for state in ("tall", "compact"):
+                    navigate(connection, f"http://127.0.0.1:{server.server_port}/index.html")
+                    cdp(connection, "Runtime.evaluate", {"expression": f"document.body.classList.toggle('is-scrolled', {state == 'compact'});"})
+                    fragment = evaluate_geometry(connection, "location.hash = 'main';")
+
+                    navigate(connection, f"http://127.0.0.1:{server.server_port}/index.html")
+                    cdp(connection, "Runtime.evaluate", {"expression": f"document.body.classList.toggle('is-scrolled', {state == 'compact'});"})
+                    focused = evaluate_geometry(connection, "const skip = document.querySelector('.skip-link[href=\"#main\"]'); skip.focus(); skip.click();")
+                    measurements.append({"width": width, "state": state, "fragment": fragment, "focused": focused})
+            return measurements
+    finally:
+        browser.terminate()
+        browser.wait(timeout=10)
+        server.shutdown()
+        server.server_close()
+
+
+class SilentRequestHandler(SimpleHTTPRequestHandler):
+    def log_message(self, _format: str, *_args: object) -> None:
+        pass
+
+
+def reserve_port() -> int:
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        return int(listener.getsockname()[1])
+
+
+def wait_for_browser_target(port: int, browser: subprocess.Popen[bytes]) -> dict[str, str]:
+    endpoint = f"http://127.0.0.1:{port}/json/list"
+    for _ in range(100):
+        if browser.poll() is not None:
+            raise AssertionError("chromium exited before opening its debugging endpoint")
+        try:
+            with urlopen(endpoint, timeout=0.1) as response:
+                targets = json.load(response)
+        except OSError:
+            time.sleep(0.05)
+            continue
+        page = next((target for target in targets if target["type"] == "page"), None)
+        if page:
+            return page
+    raise AssertionError("chromium did not open its debugging endpoint")
+
+
+class cdp_socket:
+    def __init__(self, url: str) -> None:
+        match = re.fullmatch(r"ws://([^:/]+):(\d+)(/.+)", url)
+        assert match, url
+        self.host, port, self.path = match.groups()
+        self.connection = socket.create_connection((self.host, int(port)), timeout=10)
+        self.connection.settimeout(10)
+        key = base64.b64encode(os.urandom(16)).decode()
+        request = "\r\n".join((
+            f"GET {self.path} HTTP/1.1",
+            f"Host: {self.host}:{port}",
+            "Upgrade: websocket",
+            "Connection: Upgrade",
+            f"Sec-WebSocket-Key: {key}",
+            "Sec-WebSocket-Version: 13",
+            "",
+            "",
+        )).encode()
+        self.connection.sendall(request)
+        response = self.connection.recv(4096).decode()
+        expected = base64.b64encode(hashlib.sha1(f"{key}258EAFA5-E914-47DA-95CA-C5AB0DC85B11".encode()).digest()).decode()
+        assert " 101 " in response and expected in response, response
+
+    def __enter__(self) -> "cdp_socket":
+        return self
+
+    def __exit__(self, *_args: object) -> None:
+        self.connection.close()
+
+    def send(self, payload: dict[str, object]) -> None:
+        encoded = json.dumps(payload).encode()
+        mask = os.urandom(4)
+        header = bytearray((0x81, 0x80))
+        if len(encoded) < 126:
+            header[1] |= len(encoded)
+        elif len(encoded) < 65536:
+            header[1] |= 126
+            header.extend(struct.pack("!H", len(encoded)))
+        else:
+            header[1] |= 127
+            header.extend(struct.pack("!Q", len(encoded)))
+        self.connection.sendall(bytes(header) + mask + bytes(value ^ mask[index % 4] for index, value in enumerate(encoded)))
+
+    def receive(self) -> dict[str, object]:
+        first, second = recv_exact(self.connection, 2)
+        length = second & 0x7f
+        if length == 126:
+            length = struct.unpack("!H", recv_exact(self.connection, 2))[0]
+        elif length == 127:
+            length = struct.unpack("!Q", recv_exact(self.connection, 8))[0]
+        mask = recv_exact(self.connection, 4) if second & 0x80 else b""
+        payload = recv_exact(self.connection, length)
+        if mask:
+            payload = bytes(value ^ mask[index % 4] for index, value in enumerate(payload))
+        assert first & 0x0f == 1
+        return json.loads(payload)
+
+
+def recv_exact(connection: socket.socket, size: int) -> bytes:
+    chunks = []
+    while size:
+        chunk = connection.recv(size)
+        assert chunk
+        chunks.append(chunk)
+        size -= len(chunk)
+    return b"".join(chunks)
+
+
+def cdp(connection: cdp_socket, method: str, params: dict[str, object] | None = None) -> dict[str, object]:
+    cdp.next_id += 1
+    message_id = cdp.next_id
+    connection.send({"id": message_id, "method": method, "params": params or {}})
+    while True:
+        message = connection.receive()
+        if message.get("id") == message_id:
+            assert "error" not in message, message
+            return message["result"]
+
+
+cdp.next_id = 0
+
+
+def navigate(connection: cdp_socket, url: str) -> None:
+    navigate.counter += 1
+    target = f"{url}?p6b_geometry={navigate.counter}"
+    cdp(connection, "Page.navigate", {"url": target})
+    for _ in range(100):
+        result = cdp(connection, "Runtime.evaluate", {"expression": "JSON.stringify({url: location.href, ready: document.readyState})"})
+        state = json.loads(result["result"]["value"])
+        if state == {"url": target, "ready": "complete"}:
+            return
+        time.sleep(0.05)
+    raise AssertionError(f"browser did not finish loading {target}")
+
+
+navigate.counter = 0
+
+
+def evaluate_geometry(connection: cdp_socket, activation: str) -> dict[str, float | str]:
+    expression = f'''(async () => {{
+        {activation}
+        await new Promise(resolve => setTimeout(resolve, 350));
+        const target = document.querySelector('main#main').getBoundingClientRect();
+        const nav = document.querySelector('.site-nav').getBoundingClientRect();
+        return {{ targetTop: target.top, navBottom: nav.bottom, focused: document.activeElement.tagName }};
+    }})()'''
+    result = cdp(connection, "Runtime.evaluate", {"expression": expression, "awaitPromise": True, "returnByValue": True})
+    return result["result"]["value"]
 
 
 def test_p6b_v02_active_donate_label_meets_normal_text_contrast() -> None:

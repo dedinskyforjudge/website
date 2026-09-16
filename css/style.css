@@ -194,16 +194,18 @@ body.is-scrolled .nav-logo img {
    ========================================================================== */
 
 .hero {
-  margin-top: var(--nav-height-tall);
+  margin-top: calc(var(--nav-height-tall) + 1px);
+  margin-bottom: -1px;
   background: var(--red);
   position: relative;
+  top: -1px;
   overflow: hidden;
   min-height: 520px;
   transition: margin-top 0.25s ease;
 }
 
 body.is-scrolled .hero {
-  margin-top: var(--nav-height);
+  margin-top: calc(var(--nav-height) + 1px);
 }
 
 .hero::before {
@@ -292,27 +294,32 @@ body.is-scrolled .hero {
 
 /* Pages without a .hero/.page-header (the 404) still need to clear the fixed nav */
 .error-section {
-  margin-top: var(--nav-height-tall);
+  margin-top: calc(var(--nav-height-tall) + 1px);
+  margin-bottom: -1px;
+  position: relative;
+  top: -1px;
   transition: margin-top 0.25s ease;
 }
 
 body.is-scrolled .error-section {
-  margin-top: var(--nav-height);
+  margin-top: calc(var(--nav-height) + 1px);
 }
 
 .page-header {
-  margin-top: var(--nav-height-tall);
+  margin-top: calc(var(--nav-height-tall) + 1px);
+  margin-bottom: -1px;
   background: var(--red);
   padding: 52px 24px;
   text-align: center;
   position: relative;
+  top: -1px;
   overflow: hidden;
   border-bottom: 4px solid var(--navy);
   transition: margin-top 0.25s ease;
 }
 
 body.is-scrolled .page-header {
-  margin-top: var(--nav-height);
+  margin-top: calc(var(--nav-height) + 1px);
 }
 
 .page-header::before {
