@@ -1,5 +1,18 @@
 // Mobile nav toggle
 document.addEventListener('DOMContentLoaded', function() {
+  var skipLink = document.querySelector('.skip-link[href="#main"]');
+  var main = document.querySelector('main#main');
+  if (skipLink && main) {
+    skipLink.addEventListener('click', function(event) {
+      event.preventDefault();
+      document.body.classList.add('is-scrolled');
+      main.setAttribute('tabindex', '-1');
+      main.focus({ preventScroll: true });
+      main.scrollIntoView({ behavior: 'auto', block: 'start' });
+      window.history.pushState(null, '', '#main');
+    });
+  }
+
   var toggle = document.querySelector('.nav-toggle');
   var links = document.querySelector('.nav-links');
   if (toggle && links) {

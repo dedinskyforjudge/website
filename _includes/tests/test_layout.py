@@ -1,3 +1,4 @@
+import json
 import re
 import shutil
 import subprocess
@@ -207,6 +208,28 @@ def test_p6b_v01_focused_skip_link_stacks_above_fixed_navigation() -> None:
     nav_z = int(css_declarations(source, ".site-nav")["z-index"])
     assert skip_z > nav_z
 
+    nav_height = int(css_declarations(source, ":root")["--nav-height-tall"].removesuffix("px"))
+    main_margin = css_declarations(source, "main")["scroll-margin-top"]
+    extra = int(re.search(r"\+\s*(\d+)px", main_margin).group(1))
+    assert main_margin.startswith("calc(var(--nav-height-tall)")
+    assert nav_height + extra >= nav_height
+
+    for name in PAGES:
+        parser = SupportFormParser()
+        parser.feed((ROOT / name).read_text(encoding="utf-8"))
+        skip_links = [attrs for tag, attrs in parser.elements if tag == "a" and attrs.get("class") == "skip-link"]
+        mains = [attrs for tag, attrs in parser.elements if tag == "main" and attrs.get("id") == "main"]
+        assert skip_links == [{"class": "skip-link", "href": "#main"}], name
+        assert len(mains) == 1, name
+
+    assert run_navigation_harness() == {
+        "defaultPrevented": True,
+        "focused": "main",
+        "scrolled": "main",
+        "hash": "#main",
+        "tabindex": "-1",
+    }
+
 
 def test_p6b_v02_active_donate_label_meets_normal_text_contrast() -> None:
     source = (ROOT / "css/style.css").read_text(encoding="utf-8")
@@ -225,10 +248,7 @@ def test_p6b_v04_submission_status_is_live_focusable_and_revealed() -> None:
     assert success[0] | {"role": "status", "aria-live": "polite", "aria-atomic": "true", "tabindex": "-1"} == success[0]
     assert form_error[0] | {"role": "alert", "aria-live": "assertive", "aria-atomic": "true", "tabindex": "-1"} == form_error[0]
 
-    script = (ROOT / "js/formspree-init.js").read_text(encoding="utf-8")
-    assert "submissionPending = true" in script
-    assert "[data-fs-success][data-fs-active]" in script
-    assert "scrollIntoView({ behavior: 'auto', block: 'center' })" in script
+    assert run_form_harness("status") == {"focused": "status", "scrolled": "status"}
 
 
 def test_p6b_v05_server_field_errors_are_associated_announced_and_focused() -> None:
@@ -252,10 +272,103 @@ def test_p6b_v05_server_field_errors_are_associated_announced_and_focused() -> N
         assert error["aria-live"] == "assertive"
         assert error["aria-atomic"] == "true"
 
-    script = (ROOT / "js/formspree-init.js").read_text(encoding="utf-8")
-    assert ":not([data-fs-error=\"\"])" in script
-    assert "supportForm.elements.namedItem(fieldError.dataset.fsError)" in script
-    assert "focusAndReveal(field)" in script
+    assert run_form_harness("field") == {"focused": "email", "scrolled": "email"}
+
+
+def run_navigation_harness() -> dict[str, object]:
+    script = r'''
+const fs = require('fs');
+const vm = require('vm');
+const clickHandlers = {};
+const main = {
+  attributes: {},
+  setAttribute(name, value) { this.attributes[name] = value; },
+  focus() { this.focused = true; },
+  scrollIntoView() { this.scrolled = true; },
+};
+const skip = { addEventListener(name, callback) { clickHandlers[name] = callback; } };
+const context = {
+  window: { scrollY: 0, addEventListener() {}, requestAnimationFrame(callback) { callback(); }, history: { pushState(_state, _title, hash) { this.hash = hash; } } },
+  document: {
+    querySelector(selector) {
+      if (selector === '.skip-link[href="#main"]') return skip;
+      if (selector === 'main#main') return main;
+      return null;
+    },
+    addEventListener(name, callback) { if (name === 'DOMContentLoaded') callback(); },
+    body: { classList: { add() {}, remove() {} } },
+  },
+};
+vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), context);
+const event = { preventDefault() { this.defaultPrevented = true; } };
+clickHandlers.click(event);
+console.log(JSON.stringify({
+  defaultPrevented: event.defaultPrevented === true,
+  focused: main.focused ? 'main' : '',
+  scrolled: main.scrolled ? 'main' : '',
+  hash: context.window.history.hash,
+  tabindex: main.attributes.tabindex,
+}));
+'''
+    result = subprocess.run(
+        ["node", "-e", script, str(ROOT / "js/nav.js")],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return json.loads(result.stdout)
+
+
+def run_form_harness(mode: str) -> dict[str, str]:
+    script = r'''
+const fs = require('fs');
+const vm = require('vm');
+const mode = process.argv[2];
+const form = {
+  listeners: {},
+  addEventListener(name, callback) { this.listeners[name] = callback; },
+  elements: { namedItem() { return field; } },
+};
+const field = target('email');
+const status = target('status');
+const fieldError = { dataset: { fsError: 'email' } };
+const feedbackRoot = {
+  querySelector(selector) {
+    if (selector.startsWith('[data-fs-error][data-fs-active]')) return mode === 'field' ? fieldError : null;
+    if (selector.startsWith('[data-fs-success]')) return mode === 'status' ? status : null;
+    return null;
+  },
+};
+let observer;
+const context = {
+  window: {},
+  formspree() {},
+  document: { querySelector(selector) { return selector === '#support-form' ? form : null; } },
+  HTMLElement: function HTMLElement() {},
+  MutationObserver: function MutationObserver(callback) { observer = callback; this.observe = function() {}; },
+  queueMicrotask(callback) { callback(); },
+};
+form.parentElement = feedbackRoot;
+Object.setPrototypeOf(field, context.HTMLElement.prototype);
+vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), context);
+form.listeners.submit();
+observer();
+const active = mode === 'field' ? field : status;
+console.log(JSON.stringify({ focused: active.focused || '', scrolled: active.scrolled || '' }));
+function target(name) {
+  return {
+    focus() { this.focused = name; },
+    scrollIntoView() { this.scrolled = name; },
+  };
+}
+'''
+    result = subprocess.run(
+        ["node", "-e", script, str(ROOT / "js/formspree-init.js"), mode],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return json.loads(result.stdout)
 
 
 def test_rejects_malformed_opening_marker(tmp_path: Path) -> None:

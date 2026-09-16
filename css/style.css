@@ -59,6 +59,10 @@ body {
   font-size: 16px;
 }
 
+main {
+  scroll-margin-top: calc(var(--nav-height-tall) + 20px);
+}
+
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
 
