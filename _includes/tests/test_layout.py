@@ -1357,3 +1357,29 @@ def test_campaign_interactive_controls_have_accessible_names() -> None:
         expected = expected_control_names(name)
         assert not expected - actual, (name, "missing", expected - actual)
         assert all(accessible_name for _tag, accessible_name in actual), (name, actual)
+
+
+# A form's action is the URL a visitor's own data is sent to, so one wrong
+# character loses every submission silently — the same failure the anchor
+# hrefs above are pinned against. Pinned by value, page by page, so adding a
+# form that posts somewhere new has to be a deliberate edit here too.
+EXPECTED_FORM_ENDPOINTS = {
+    "support.html": (("https://formspree.io/f/mojyzvpo", "POST"),),
+    **{name: () for name in PAGES if name != "support.html"},
+}
+
+
+def form_endpoints(root: HtmlElement) -> list[tuple[str, str]]:
+    return [
+        (node.attributes.get("action", ""), node.attributes.get("method", "get").upper())
+        for node in walk_elements(root)
+        if node.tag == "form"
+    ]
+
+
+def test_campaign_form_endpoints_match_baseline() -> None:
+    for name in PAGES:
+        root = parse_html((ROOT / name).read_text(encoding="utf-8")).root
+        actual = form_endpoints(root)
+        expected = list(EXPECTED_FORM_ENDPOINTS[name])
+        assert actual == expected, (name, "form endpoint", expected, actual)
