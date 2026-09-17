@@ -989,6 +989,17 @@ def endorsement_entries() -> list[tuple[str, str, str, str]]:
     return entries
 
 
+def test_endorsement_tier_order_on_the_page_is_exact() -> None:
+    """Tier order is the page's prominence ordering, so it is pinned, not incidental.
+
+    EXPECTED_ENDORSEMENT_TIERS is a dict literal, and dicts keep insertion
+    order, so the order its tiers are written in is the order the page must
+    render them in. Membership is checked separately; this pins only sequence.
+    """
+    rendered = tuple(dict.fromkeys(tier for _name, _title, _note, tier in endorsement_entries()))
+    assert rendered == tuple(EXPECTED_ENDORSEMENT_TIERS)
+
+
 def test_endorsement_tier_membership_is_exact() -> None:
     actual = {}
     for name, _title, _note, tier in endorsement_entries():
