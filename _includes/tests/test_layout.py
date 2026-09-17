@@ -878,6 +878,7 @@ EXPECTED_ENDORSEMENT_TIERS = {
         "Jeff Pfannerstill",
         "Steve Ponto",
         "Gary Mahkorn",
+        "Alfonso Morales",
     ),
     "Organizations and Businesses": (
         "Milwaukee Police Association",
@@ -893,6 +894,7 @@ EXPECTED_ENDORSEMENT_NOTES = {
     "Hon. Michael Bohren": "(Retired)",
     "Hon. Kathryn Foster": "(Retired)",
     "Hon. Randy R. Koschnick": "(Former)",
+    "Alfonso Morales": "(Former)",
 }
 VOID_ELEMENTS = {
     "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
@@ -999,7 +1001,7 @@ def test_scott_walker_entry_shape_is_exact() -> None:
 def test_required_endorsement_name_set_and_count_are_exact() -> None:
     names = [entry[0] for entry in endorsement_entries()]
     expected = {name for tier in EXPECTED_ENDORSEMENT_TIERS.values() for name in tier}
-    assert len(names) == 43
+    assert len(names) == 44
     assert len(names) == len(set(names))
     assert set(names) == expected
 
@@ -1017,7 +1019,7 @@ def test_endorsements_sitemap_lastmod_is_current() -> None:
         location = route.findtext("sm:loc", namespaces=namespace)
         if location == "https://dedinsky4judge.com/endorsements":
             matches.append(route.findtext("sm:lastmod", namespaces=namespace))
-    assert matches == ["2026-09-15"]
+    assert matches == ["2026-09-16"]
 
 
 CAMPAIGN_PRINCIPLES = (
@@ -1108,7 +1110,7 @@ CONTENT_TEXTS = {
         "\"Now, more than ever, we need judges who not only respect the law, but who stand up for everyone's rights and freedoms. Paul Dedinsky will bring the perfect blend of constitutionalism, compassion, and justice to Waukesha's bench.\"",
         "\"Paul and I have been close friends for 20 years. With his experience as a longtime prosecutor, he's the one I trust to keep my family — and all of our families in Waukesha County — safe.\"",
         "Hon. Mark Gundrum", "Hon. Shelley A. Grogan", "Hon. Maria Lazar", "Hon. Anthony LoCoco", "Wisconsin Court of Appeals Judge, District II",
-        "Full List of Endorsements", "Statewide Officials", "Scott Walker", "Governor of Wisconsin", "(Former)", "Wisconsin Supreme Court", "Hon. Annette Kingsland Ziegler", "Hon. Rebecca Grassl Bradley", "Hon. Daniel Kelly", "Wisconsin Court of Appeals, District II", "Waukesha County Circuit Court", "Hon. Michael Aprahamian", "Hon. Jennifer Dorow", "Hon. Cody Horlacher", "Hon. David Maas", "Hon. Michael Maxwell", "Hon. J. Arthur Melvin III", "Hon. Jack Pitzo", "Hon. Scott Wagner", "Hon. Zach Wittchow", "Hon. Michael Bohren", "(Retired)", "Hon. Kathryn Foster", "Additional Wisconsin Jurists", "Hon. T. Christopher Dee", "Hon. Robert Dehring", "Hon. Grant Scaife", "Hon. Randy R. Koschnick", "State Senators", "Julian Bradley", "State Senator", "Steve Nass", "Rob Hutton", "State Representatives", "Barb Dittrich", "State Representative", "Adam Neylon", "Chuck Wichgers", "Scott Allen", "Dan Knodl", "Jim Piwowarczyk", "Local Officials", "Eric Severson", "Lesli Boese", "Tim Aicher", "Mayor of Delafield", "Matt Rosek", "Mayor of Oconomowoc", "Jeff Pfannerstill", "Hartland Village President", "Steve Ponto", "Mayor of Brookfield", "Gary Mahkorn", "Brookfield Common Council President", "Organizations and Businesses", "Milwaukee Police Association", "Waukesha County Young Republicans", "5 Riders Organization", "Hernandez Roofing",
+        "Full List of Endorsements", "Statewide Officials", "Scott Walker", "Governor of Wisconsin", "(Former)", "Wisconsin Supreme Court", "Hon. Annette Kingsland Ziegler", "Hon. Rebecca Grassl Bradley", "Hon. Daniel Kelly", "Wisconsin Court of Appeals, District II", "Waukesha County Circuit Court", "Hon. Michael Aprahamian", "Hon. Jennifer Dorow", "Hon. Cody Horlacher", "Hon. David Maas", "Hon. Michael Maxwell", "Hon. J. Arthur Melvin III", "Hon. Jack Pitzo", "Hon. Scott Wagner", "Hon. Zach Wittchow", "Hon. Michael Bohren", "(Retired)", "Hon. Kathryn Foster", "Additional Wisconsin Jurists", "Hon. T. Christopher Dee", "Hon. Robert Dehring", "Hon. Grant Scaife", "Hon. Randy R. Koschnick", "State Senators", "Julian Bradley", "State Senator", "Steve Nass", "Rob Hutton", "State Representatives", "Barb Dittrich", "State Representative", "Adam Neylon", "Chuck Wichgers", "Scott Allen", "Dan Knodl", "Jim Piwowarczyk", "Local Officials", "Eric Severson", "Lesli Boese", "Tim Aicher", "Mayor of Delafield", "Matt Rosek", "Mayor of Oconomowoc", "Jeff Pfannerstill", "Hartland Village President", "Steve Ponto", "Mayor of Brookfield", "Gary Mahkorn", "Brookfield Common Council President", "Alfonso Morales", "Milwaukee Chief of Police", "Organizations and Businesses", "Milwaukee Police Association", "Waukesha County Young Republicans", "5 Riders Organization", "Hernandez Roofing",
         "Stand With Paul", "Stand with Paul.", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
     ),
     "support.html": (
@@ -1137,7 +1139,7 @@ CONTENT_COUNTS = {
         "Hon. Mark Gundrum": 2, "Hon. Shelley A. Grogan": 2,
         "Hon. Maria Lazar": 2, "Hon. Anthony LoCoco": 2,
         "Wisconsin Court of Appeals Judge, District II": 4,
-        "(Former)": 4, "(Retired)": 2, "State Senator": 3,
+        "(Former)": 5, "(Retired)": 2, "State Senator": 3,
         "State Representative": 6,
     },
     "support.html": {"*": 2, "(Optional)": 2},
