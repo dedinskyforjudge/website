@@ -210,6 +210,29 @@ def test_shared_structure_count_and_order_on_all_pages() -> None:
         assert [text.index(token) for token in tokens] == sorted(text.index(token) for token in tokens), name
 
 
+def test_footer_mailing_address_is_fenced_by_rules() -> None:
+    """The footer address is fenced above and below, and only in the footer.
+
+    The fences are pseudo-elements, so no markup carries them and the
+    stylesheet is the only place this lives. Both must paint as a visible
+    centered bar, and the rule stays scoped to .site-footer so the copy of the
+    same address in the donate page's body is not fenced.
+    """
+    source = (ROOT / "css/style.css").read_text(encoding="utf-8")
+    fence = css_declarations(
+        source, ".site-footer .mailing-address::before, .site-footer .mailing-address::after"
+    )
+    assert fence["content"] == '""'
+    assert fence["display"] == "block"
+    assert int(fence["height"].removesuffix("px")) > 0
+    assert int(fence["width"].removesuffix("px")) > 0
+    assert fence["margin"].split()[-1] == "auto"
+    assert fence["background"].startswith("rgba(255,255,255,")
+    scopes = re.findall(r"[^,{}\n]*\.mailing-address::(?:before|after)", source)
+    assert scopes, "no address fence rule found"
+    assert all(scope.strip().startswith(".site-footer ") for scope in scopes), scopes
+
+
 def test_redirects_blocks_includes() -> None:
     rules = [
         line.split()

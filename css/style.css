@@ -1097,6 +1097,20 @@ body.is-scrolled .page-header {
   margin-bottom: 4px;
 }
 
+/* A short bar above and below fences the mailing address off from the
+   disclaimer above it and the copyright line below, so what sits between the
+   bars is exactly what you would copy onto an envelope. Pseudo-elements keep
+   this out of the markup; the .site-footer prefix keeps the donate page's
+   copy of the same address unfenced. */
+.site-footer .mailing-address::before, .site-footer .mailing-address::after {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 1px;
+  margin: 12px auto;
+  background: rgba(255,255,255,0.25);
+}
+
 .site-footer a {
   color: rgba(255,255,255,0.55);
   text-decoration: underline;
