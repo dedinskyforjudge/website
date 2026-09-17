@@ -864,7 +864,7 @@ EXPECTED_ENDORSEMENT_TIERS = {
     "Law Enforcement": (
         "Eric Severson",
         "Nick Ollinger",
-        "Arnold Moncada",
+        "Arnie Moncada",
         "Alfonso Morales",
     ),
     "State Senators": ("Julian Bradley", "Rob Hutton", "Steve Nass"),
@@ -896,8 +896,7 @@ EXPECTED_ENDORSEMENT_NOTES = {
     "Hon. Michael Bohren": "(Retired)",
     "Hon. Kathryn Foster": "(Retired)",
     "Hon. Randy R. Koschnick": "(Former)",
-    "Nick Ollinger": "(Elect)",
-    "Arnold Moncada": "(Former)",
+    "Arnie Moncada": "(Former)",
 }
 VOID_ELEMENTS = {
     "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
@@ -1119,7 +1118,7 @@ CONTENT_TEXTS = {
         "\"Now, more than ever, we need judges who not only respect the law, but who stand up for everyone's rights and freedoms. Paul Dedinsky will bring the perfect blend of constitutionalism, compassion, and justice to Waukesha's bench.\"",
         "\"Paul and I have been close friends for 20 years. With his experience as a longtime prosecutor, he's the one I trust to keep my family — and all of our families in Waukesha County — safe.\"",
         "Hon. Mark Gundrum", "Hon. Shelley A. Grogan", "Hon. Maria Lazar", "Hon. Anthony LoCoco", "Wisconsin Court of Appeals Judge, District II",
-        "Full List of Endorsements", "Wisconsin Supreme Court", "Hon. Annette Kingsland Ziegler", "Hon. Rebecca Grassl Bradley", "Hon. Daniel Kelly", "Wisconsin Court of Appeals, District II", "Waukesha County Circuit Court", "Hon. Michael Aprahamian", "Hon. Jennifer Dorow", "Hon. Cody Horlacher", "Hon. David Maas", "Hon. Michael Maxwell", "Hon. J. Arthur Melvin III", "Hon. Jack Pitzo", "Hon. Scott Wagner", "Hon. Zach Wittchow", "Hon. Michael Bohren", "(Retired)", "Hon. Kathryn Foster", "Additional Wisconsin Jurists", "Hon. T. Christopher Dee", "Hon. Robert Dehring", "Hon. Grant Scaife", "Hon. Randy R. Koschnick", "District Attorney", "Lesli Boese", "Waukesha County District Attorney", "State Senators", "Julian Bradley", "State Senator", "Steve Nass", "Rob Hutton", "State Representatives", "Barb Dittrich", "State Representative", "Adam Neylon", "Chuck Wichgers", "Scott Allen", "Dan Knodl", "Jim Piwowarczyk", "Law Enforcement", "Eric Severson", "Nick Ollinger", "(Elect)", "Arnold Moncada", "Alfonso Morales", "Fitchburg Chief of Police", "Local Officials", "Tim Aicher", "Mayor of Delafield", "Matt Rosek", "Mayor of Oconomowoc", "Jeff Pfannerstill", "Hartland Village President", "Steve Ponto", "Mayor of Brookfield", "Gary Mahkorn", "Brookfield Common Council President", "Organizations and Businesses", "Milwaukee Police Association", "Waukesha County Young Republicans", "5 Riders Organization", "Hernandez Roofing",
+        "Full List of Endorsements", "Wisconsin Supreme Court", "Hon. Annette Kingsland Ziegler", "Hon. Rebecca Grassl Bradley", "Hon. Daniel Kelly", "Wisconsin Court of Appeals, District II", "Waukesha County Circuit Court", "Hon. Michael Aprahamian", "Hon. Jennifer Dorow", "Hon. Cody Horlacher", "Hon. David Maas", "Hon. Michael Maxwell", "Hon. J. Arthur Melvin III", "Hon. Jack Pitzo", "Hon. Scott Wagner", "Hon. Zach Wittchow", "Hon. Michael Bohren", "(Retired)", "Hon. Kathryn Foster", "Additional Wisconsin Jurists", "Hon. T. Christopher Dee", "Hon. Robert Dehring", "Hon. Grant Scaife", "Hon. Randy R. Koschnick", "District Attorney", "Lesli Boese", "Waukesha County District Attorney", "State Senators", "Julian Bradley", "State Senator", "Steve Nass", "Rob Hutton", "State Representatives", "Barb Dittrich", "State Representative", "Adam Neylon", "Chuck Wichgers", "Scott Allen", "Dan Knodl", "Jim Piwowarczyk", "Law Enforcement", "Eric Severson", "Nick Ollinger", "Presumptive Waukesha County Sheriff-Elect", "Arnie Moncada", "Alfonso Morales", "Fitchburg Police Chief & Oconomowoc resident", "Local Officials", "Tim Aicher", "Mayor of Delafield", "Matt Rosek", "Mayor of Oconomowoc", "Jeff Pfannerstill", "Hartland Village President", "Steve Ponto", "Mayor of Brookfield", "Gary Mahkorn", "Brookfield Common Council President", "Organizations and Businesses", "Milwaukee Police Association", "Waukesha County Young Republicans", "5 Riders Organization", "Hernandez Roofing",
         "Stand With Paul", "Stand with Paul.", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
     ),
     "support.html": (
