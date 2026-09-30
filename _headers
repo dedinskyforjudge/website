@@ -73,3 +73,8 @@
 
 /404
   Cache-Control: public, max-age=0, must-revalidate
+
+# Unlisted event pages (SPEC S13). Extensionless route only; /*.html
+# already covers the direct .html request.
+/events/lincoln
+  Cache-Control: public, max-age=0, must-revalidate
