@@ -1092,6 +1092,11 @@ VOID_INPUT_TYPES = frozenset({"hidden"})
 # Curated campaign content contracts.  These are intentionally literal: a
 # layout revision may add presentation copy or wrappers, but it cannot remove
 # or alter any listed campaign statement.
+# S2.4: the attribution is one element whose text is verbatim, split into three runs that
+# break apart on phones plus the separator bar (hidden there); see test_footer_attribution_is_verbatim.
+FOOTER_ATTRIBUTION = "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer"
+FOOTER_ATTRIBUTION_RUNS = ("Authorized and paid for by", "Paul Dedinsky for Judge", "|", "Lane Ruhland, Treasurer")
+
 CONTENT_TEXTS = {
     "index.html": (
         "Dedinsky for Judge — Waukesha County Circuit Court",
@@ -1103,7 +1108,7 @@ CONTENT_TEXTS = {
         "30+ years of legal experience", "150+ trials", "25 years as a State Prosecutor",
         "Main author/editor, Wisconsin Domestic Violence Prosecution Manual, 2004",
         "Ph.D. in Education & Leadership", "Trained police officers at Waukesha County Technical College and Statewide",
-        "Support the Campaign", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer",
+        "Support the Campaign", *FOOTER_ATTRIBUTION_RUNS,
         "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
     ),
     "about.html": (
@@ -1125,14 +1130,14 @@ CONTENT_TEXTS = {
         "St. Thomas More Lawyers Society", "President, 2022. Board of Directors, 2013–2019 and 2022–present. Co-organized the annual Youth Law Day at Marquette University Law School, 2010–2018.",
         "SOFA, Inc. — Oconomowoc, WI", "Board member supporting the “Jump for Archie” anti-opiate addiction event, in memory of Archie Badura of Oconomowoc.",
         "Earlier Service", "Big Brothers/Big Sisters of Metro Milwaukee. St. Catherine's Residence for Women committee member. St. Aemilian's Pre-School board member.",
-        "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+        *FOOTER_ATTRIBUTION_RUNS, "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
     ),
     "vote.html": (
         "Vote — Dedinsky for Judge", "MARK YOUR CALENDAR", "April 6, 2027", "Tuesday — Wisconsin Spring Election", "Polls Open 7:00 AM – 8:00 PM",
         "Plan Ahead", "Absentee ballot request", "by Mar 17", "Mail / online registration", "through Apr 2", "In-person at municipal clerk", "by Apr 1, 5pm", "Bring proof of residence", "Same-day registration at polls", "Election Day", "Apr 6", "Polls open 7am – 8pm",
         "All dates and procedures should be confirmed at — Wisconsin's official voter resource.", "Judicial Philosophy", "Paul believes the best judges lead with firmness, intelligence, and fairness. They are public servants — approachable, accessible, and committed to justice and the rule of law.", "Paul understands the justice system from every perspective. He has presided over hundreds of cases and knows that every person who enters a courtroom deserves to be treated with dignity and respect.",
         "Stand With Paul", "Registered voters in Waukesha County. Circuit court judges serve the entire county.", "Spread the word. Help win this race.",
-        "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+        *FOOTER_ATTRIBUTION_RUNS, "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
     ),
     "endorsements.html": (
         "Endorsements — Dedinsky for Judge", "Trusted by leaders across Wisconsin", "In Their Own Words",
@@ -1142,14 +1147,14 @@ CONTENT_TEXTS = {
         "\"Paul and I have been close friends for 20 years. With his experience as a longtime prosecutor, he's the one I trust to keep my family — and all of our families in Waukesha County — safe.\"",
         "Hon. Mark Gundrum", "Hon. Shelley A. Grogan", "Hon. Maria Lazar", "Hon. Anthony LoCoco", "Wisconsin Court of Appeals Judge, District II",
         "Full List of Endorsements", "Wisconsin Supreme Court", "Hon. Annette Kingsland Ziegler", "Hon. Rebecca Grassl Bradley", "Hon. Daniel Kelly", "Wisconsin Court of Appeals, District II", "Waukesha County Circuit Court", "Hon. Michael Aprahamian", "Hon. Jennifer Dorow", "Hon. Cody Horlacher", "Hon. David Maas", "Hon. Michael Maxwell", "Hon. J. Arthur Melvin III", "Hon. Jack Pitzo", "Hon. Scott Wagner", "Hon. Zach Wittchow", "Hon. Michael Bohren", "(Retired)", "Hon. Kathryn Foster", "Additional Wisconsin Jurists", "Hon. T. Christopher Dee", "Hon. Robert Dehring", "Hon. Grant Scaife", "Hon. Randy R. Koschnick", "District Attorney", "Lesli Boese", "Waukesha County District Attorney", "State Senators", "Julian Bradley", "State Senator", "Steve Nass", "Rob Hutton", "State Representatives", "Barb Dittrich", "State Representative", "Adam Neylon", "Chuck Wichgers", "Scott Allen", "Dan Knodl", "Jim Piwowarczyk", "Law Enforcement", "Eric Severson", "Nick Ollinger", "Presumptive Waukesha County Sheriff-Elect", "Arnie Moncada", "Alfonso Morales", "Fitchburg Police Chief & Oconomowoc resident", "Local Officials", "Tim Aicher", "Mayor of Delafield", "Matt Rosek", "Mayor of Oconomowoc", "Jeff Pfannerstill", "Hartland Village President", "Steve Ponto", "Mayor of Brookfield", "Gary Mahkorn", "Brookfield Common Council President", "Organizations and Businesses", "Milwaukee Police Association", "Waukesha County Young Republicans", "5 Riders Organization", "Hernandez Roofing",
-        "Stand With Paul", "Stand with Paul.", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+        "Stand With Paul", "Stand with Paul.", *FOOTER_ATTRIBUTION_RUNS, "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
     ),
     "support.html": (
         "Support — Dedinsky for Judge", "Every conversation matters in a local election", "Show your support to neighbors.", "Introduce Paul to your neighbors.", "Help canvass Waukesha County.", "Open your home or a local venue.",
-        "Sign Up", "Thanks for signing up!", "The campaign will be in touch soon.", "Name", "*", "Email", "Phone", "(Optional)", "Address", "(Optional — helps with yard sign delivery)", "Message", "Ways you'd like to help", "Display a yard sign", "Host a meet & greet", "Host a fundraiser", "Knock on doors", "Other", "Paul has my permission to publicly list me as a Supporter", "Stay in touch", "I'd like to receive campaign email updates", "I'd like to receive text updates (opt-out anytime)", "Contribute", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
+        "Sign Up", "Thanks for signing up!", "The campaign will be in touch soon.", "Name", "*", "Email", "Phone", "(Optional)", "Address", "(Optional — helps with yard sign delivery)", "Message", "Ways you'd like to help", "Display a yard sign", "Host a meet & greet", "Host a fundraiser", "Knock on doors", "Other", "Paul has my permission to publicly list me as a Supporter", "Stay in touch", "I'd like to receive campaign email updates", "I'd like to receive text updates (opt-out anytime)", "Contribute", *FOOTER_ATTRIBUTION_RUNS, "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018",
     ),
     "donate.html": (
-        "Donate — Dedinsky for Judge", "Donate", "Your support makes a difference", "Every dollar helps Paul reach voters across Waukesha County. Contributions are processed securely through WinRed.", "Donate via WinRed →", "Opens in a new tab.", "Mailing address", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "More Ways to Help", "Can't Donate? You Can Still Help", "Display a yard sign, host a meet & greet, or knock on doors. Every conversation matters in a local race.", "Get Involved", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "© 2026 All rights reserved. · ·",
+        "Donate — Dedinsky for Judge", "Donate", "Your support makes a difference", "Every dollar helps Paul reach voters across Waukesha County. Contributions are processed securely through WinRed.", "Donate via WinRed →", "Opens in a new tab.", "Mailing address", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "More Ways to Help", "Can't Donate? You Can Still Help", "Display a yard sign, host a meet & greet, or knock on doors. Every conversation matters in a local race.", "Get Involved", *FOOTER_ATTRIBUTION_RUNS, "© 2026 All rights reserved. · ·",
     ),
     "privacy.html": (
         "Privacy Policy — Dedinsky for Judge", "Privacy Policy", "Plain answers about the information you share with us", "Effective July 22, 2026.", "This site belongs to the Paul Dedinsky for Judge campaign. It exists to introduce Paul to Waukesha County voters, not for tracking purposes. Here's exactly what we collect and what we do with it.",
@@ -1157,10 +1162,10 @@ CONTENT_TEXTS = {
         "Where it goes", "Form submissions are delivered by , our form processor, and kept by the campaign in a private database. It is used by campaign volunteers to follow up with you by arranging yard signs, coordinating events, and sending the updates you opted into. We do not sell, rent, or share your information with anyone else.", "Formspree",
         "Donations happen entirely on WinRed's website under — this site never sees your payment details. Campaign finance law requires donations to be reported under Wisconsin's disclosure rules.", "WinRed's privacy policy",
         "Cookies and tracking", "None. This site sets no cookies and runs no analytics, advertising, or tracking scripts. Fonts and all code are served from our own domain. Like nearly every website, our hosting provider (Netlify) keeps standard server logs, including IP addresses, to serve pages and prevent abuse.",
-        "Email and text updates", "We contact you only in ways you opted into. To stop hearing from us, reply to any message or email the campaign and we'll take you off the list.", "Your choices", "Want your information corrected or deleted from our volunteer list? Email and we'll take care of it.", "privacy@dedinsky4judge.com", "This site is not directed at children under 13, and we don't knowingly collect their information. If this policy changes, the update appears on this page with a new effective date.", "Donate", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "© 2026 All rights reserved. · ·",
+        "Email and text updates", "We contact you only in ways you opted into. To stop hearing from us, reply to any message or email the campaign and we'll take you off the list.", "Your choices", "Want your information corrected or deleted from our volunteer list? Email and we'll take care of it.", "privacy@dedinsky4judge.com", "This site is not directed at children under 13, and we don't knowingly collect their information. If this policy changes, the update appears on this page with a new effective date.", "Donate", *FOOTER_ATTRIBUTION_RUNS, "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "© 2026 All rights reserved. · ·",
     ),
     "404.html": (
-        "Page Not Found — Dedinsky for Judge", "404", "Page Not Found", "The page you're looking for doesn't exist or has been moved. Let's get you back on track.", "Return to Home", "Donate", "Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer", "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "© 2026 All rights reserved. · ·",
+        "Page Not Found — Dedinsky for Judge", "404", "Page Not Found", "The page you're looking for doesn't exist or has been moved. Let's get you back on track.", "Return to Home", "Donate", *FOOTER_ATTRIBUTION_RUNS, "Paul Dedinsky for Judge PO Box 180051 Delafield, WI 53018", "© 2026 All rights reserved. · ·",
     ),
 }
 
@@ -1330,6 +1335,41 @@ def test_campaign_content_runs_and_ownership_match_baseline() -> None:
         for text, count in expected.items():
             owners = elements_owning_text(actual_root, text)
             assert len(owners) == count, (name, text, count, [owner.tag for owner in owners])
+
+
+class ClassTextParser(HTMLParser):
+    """Text of every element carrying `cls`, in document order (descendants included)."""
+
+    def __init__(self, cls: str):
+        super().__init__()
+        self.cls, self.depth, self.found = cls, 0, []
+
+    def handle_starttag(self, tag, attrs):
+        if self.depth:
+            self.depth += 1
+        elif self.cls in (dict(attrs).get("class") or "").split():
+            self.depth = 1
+            self.found.append("")
+
+    def handle_endtag(self, tag):
+        if self.depth:
+            self.depth -= 1
+
+    def handle_data(self, data):
+        if self.depth:
+            self.found[-1] += data
+
+
+def class_texts(source: str, cls: str) -> list[str]:
+    parser = ClassTextParser(cls)
+    parser.feed(source)
+    return [" ".join(text.split()) for text in parser.found]
+
+
+def test_footer_attribution_is_verbatim() -> None:
+    for name in PAGES:
+        texts = class_texts((ROOT / name).read_text(encoding="utf-8"), "paid-for")
+        assert texts == [FOOTER_ATTRIBUTION], (name, texts)
 
 
 def test_campaign_heading_outline_matches_baseline() -> None:

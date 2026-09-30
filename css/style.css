@@ -1087,6 +1087,22 @@ body.is-scrolled .page-header {
   text-transform: uppercase;
 }
 
+/* The attribution breaks only between its three parts; on phones they stack and the
+   separator bar is hidden (SPEC S2.4). The text content stays verbatim. */
+.site-footer .paid-for .pf {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .site-footer .paid-for .pf {
+    display: block;
+  }
+
+  .site-footer .paid-for .pf-bar {
+    display: none;
+  }
+}
+
 .mailing-address {
   font-style: normal;
 }

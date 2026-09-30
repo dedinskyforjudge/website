@@ -34,142 +34,266 @@
     /* Mirrors the plain color flyer (misc/print/flyer/paul-dedinsky-flyer-kit): its navy, gold and
        cream, set in the site's own fonts. Flyer colors live here, outside the site palette. */
     .ev { --f-navy: #1b2a44; --f-navy-deep: #141f33; --f-gold: #b8963f; --f-gold-light: #d9c17a;
-          --f-red: #8f1c1c; --f-cream: #f7f3ea; --f-paper: #fffdf8; --f-ink: #2b2b2b; --f-muted: #5c5c5c;
-          background: var(--f-paper); color: var(--f-ink); font-family: var(--font-body); line-height: 1.55; }
-    .ev .cap { font-size: .72rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
-    .ev-hero { background: var(--f-navy); color: var(--white); text-align: center; padding: 18px 16px 34px; }
-    .ev-hero .home { display: inline-block; color: var(--f-gold-light); font-size: .8rem; letter-spacing: .06em; text-decoration: none; border-bottom: 1px solid rgba(217,193,122,.4); margin-bottom: 24px; }
-    .ev-hero .cap { color: var(--f-gold-light); margin: 0; }
-    .ev-hero h1 { font-family: var(--font-heading); font-weight: 400; font-size: 2.4rem; line-height: 1.12; margin: 10px 0 0; color: var(--white); text-wrap: balance; }
-    .ev-hero .for { font-family: var(--font-heading); font-style: italic; font-size: 1.3rem; color: var(--f-gold-light); margin: 6px 0 0; }
-    .ev-hero .name { font-family: var(--font-heading); font-weight: 700; font-size: 3rem; line-height: 1.05; color: var(--f-gold); margin: 2px 0 0; }
-    .ev-hero .office { margin: 10px 0 0; color: var(--white); text-wrap: balance; }
-    .facts { background: var(--f-cream); border-top: 3px solid var(--f-gold); border-bottom: 1px solid #e6dcc4; }
-    .facts .row { max-width: 816px; margin: 0 auto; display: grid; grid-template-columns: 1.15fr .85fr 1.2fr; }
-    .facts .cell { padding: 18px 22px; }
-    .facts .cell + .cell { border-left: 1px solid #e6dcc4; }
-    .facts .cap { color: var(--f-gold); margin: 0 0 4px; }
-    .facts .val { font-family: var(--font-heading); font-size: 1.35rem; line-height: 1.2; color: var(--f-navy); margin: 0; }
-    .facts .sub { font-size: .9rem; color: var(--f-muted); margin: 2px 0 0; }
-    .facts .sub a { color: var(--f-muted); }
-    .note { max-width: 816px; margin: 0 auto; padding: 12px 22px; text-align: center; font-size: .92rem; color: var(--f-ink); text-wrap: balance; }
-    .ev-body { max-width: 816px; margin: 0 auto; padding: 8px 22px 40px; }
-    .collection { display: grid; grid-template-columns: 280px 1fr; gap: 44px; align-items: center; margin-top: 36px; }
+          --f-red: #8f1c1c; --f-cream: #f7f3ea; --f-paper: #fffdf8; --f-ink: #2b2b2b; --f-muted: #5c5c5c; --f-line: #e6dcc4;
+          background: var(--f-paper); color: var(--f-ink); font-family: var(--font-body); line-height: 1.55; margin: 0; }
+    .ev .cap { font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+    .nw { white-space: nowrap; }
+
+    /* Hero: an invitation card, framed in gold, with the details card lifting over its lower edge. */
+    .ev-hero { background: radial-gradient(120% 90% at 50% 0%, #26395c 0%, var(--f-navy) 55%, var(--f-navy-deep) 100%);
+               color: #fff; text-align: center; padding: 16px 16px 84px; }
+    .ev-hero .frame { max-width: 720px; margin: 0 auto; border: 1px solid rgba(217,193,122,.55); outline: 1px solid rgba(217,193,122,.25);
+                      outline-offset: 5px; padding: 26px 20px 30px; }
+    .ev-hero .home { display: inline-block; color: var(--f-gold-light); font-size: .85rem; text-decoration: none; margin-bottom: 14px; }
+    .ev-hero .kicker { color: var(--f-gold-light); font-size: .82rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; margin: 0; }
+    .ornament { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--f-gold); margin: 12px auto; max-width: 260px; }
+    .ornament::before, .ornament::after { content: ""; flex: 1; height: 1px; background: currentColor; opacity: .7; }
+    .ornament span { width: 7px; height: 7px; background: currentColor; transform: rotate(45deg); }
+    .ev-hero h1 { font-family: var(--font-heading); font-weight: 500; font-size: 2.7rem; line-height: 1.08; margin: 0; color: #fff; text-wrap: balance; }
+    .ev-hero .for { font-family: var(--font-heading); font-style: italic; font-size: 1.35rem; color: var(--f-gold-light); margin: 10px 0 0; }
+    .ev-hero .name { font-family: var(--font-heading); font-weight: 700; font-size: 3.2rem; line-height: 1.02; color: var(--f-gold); margin: 0; }
+    .ev-hero .office { margin: 10px 0 0; color: rgba(255,255,255,.92); font-size: .95rem; letter-spacing: .02em; text-wrap: balance; }
+
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+
+    /* Details card: one glance gives when, where, food, entrance, and how to RSVP. */
+    .details { position: relative; margin-top: -60px; background: #fff; border: 1px solid var(--f-line); border-radius: 12px;
+               box-shadow: 0 10px 28px rgba(20,31,51,.16); padding: 20px; }
+    .when { display: flex; gap: 16px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--f-line); }
+    .tile { flex: none; width: 68px; border-radius: 10px; overflow: hidden; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+    .tile .m { background: var(--f-red); color: #fff; font-size: .72rem; font-weight: 700; letter-spacing: .12em; padding: 3px 0; }
+    .tile .d { background: #fff; color: var(--f-navy); font-family: var(--font-heading); font-weight: 700; font-size: 2.1rem; line-height: 1.15; border: 1px solid var(--f-line); border-top: 0; border-radius: 0 0 10px 10px; }
+    .when .big { font-family: var(--font-heading); font-size: 1.45rem; font-weight: 600; color: var(--f-navy); line-height: 1.15; margin: 0; }
+    .when .small { margin: 2px 0 0; color: var(--f-muted); font-size: .95rem; }
+    .facts { list-style: none; margin: 0; padding: 6px 0 0; }
+    .facts li { display: flex; gap: 14px; align-items: flex-start; padding: 10px 0; }
+    .facts svg { flex: none; width: 22px; height: 22px; margin-top: 2px; color: var(--f-gold); }
+    .facts .t { margin: 0; color: var(--f-navy); font-weight: 600; }
+    .facts .s { margin: 0; color: var(--f-muted); font-size: .92rem; }
+    .facts a { color: var(--f-navy); }
+    .rsvp { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--f-line); text-align: center; }
+    .rsvp .go { display: inline-flex; align-items: center; gap: 10px; background: var(--f-red); color: #fff; text-decoration: none;
+                 font-weight: 600; font-size: 1rem; letter-spacing: 0; text-transform: none; padding: 12px 20px; border-radius: 8px; }
+    .rsvp .go svg { width: 20px; height: 20px; }
+    .rsvp .who { margin: 10px 0 0; font-size: .95rem; }
+    .rsvp .who a { color: var(--f-navy); }
+    .rsvp .limited { margin: 4px 0 0; font-style: italic; color: var(--f-muted); font-size: .9rem; }
+
+    .rsvp.top { margin-top: 4px; }
+    .tile .d, .stat b { font-variant-numeric: lining-nums; }
+    .tile .d { line-height: 1; padding: 6px 0 8px; }
+    /* Reply band: the page's closing call to action, full width, bookending the hero. */
+    .reply { background: var(--f-cream); border-top: 3px solid var(--f-gold); padding: 40px 16px 44px; }
+    .reply-in { max-width: 728px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px 40px; align-items: center; }
+    .reply h2 { font-family: var(--font-heading); font-size: 2rem; line-height: 1.1; color: var(--f-navy); margin: 0 0 10px; text-wrap: balance; }
+    .reply .who { margin: 0; }
+    .reply .limited { margin: 4px 0 0; font-style: italic; color: var(--f-muted); font-size: .92rem; }
+    .reply-do { display: grid; gap: 10px; }
+    .reply .field, .reply .mailbtn { height: 54px; border-radius: 10px; box-sizing: border-box; }
+    .reply .field { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #fff;
+                    border: 1px solid var(--f-gold-light); padding: 0 7px 0 16px; }
+    .reply #addr { font-size: 1.1rem; font-weight: 600; color: var(--f-navy); white-space: nowrap; user-select: all; }
+    .reply .copy { display: none; height: 40px; align-items: center; gap: 6px; font: inherit; font-size: .9rem; font-weight: 600; cursor: pointer;
+                   border: 1.5px solid var(--f-red); color: var(--f-red); background: #fff; border-radius: 7px; padding: 0 12px; }
+    .reply .copy svg, .reply .mailbtn svg { width: 18px; height: 18px; }
+    .js .reply .copy { display: inline-flex; }
+    .reply .mailbtn { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--f-red); color: #fff;
+                      border: 2px solid var(--f-red); font-weight: 600; text-decoration: none; }
+    .reply .l-mouse { display: none; }
+    .mouse .reply .l-mouse { display: inline; } .mouse .reply .l-touch { display: none; }
+    .mouse .reply .copy { background: var(--f-red); color: #fff; }
+    .mouse .reply .mailbtn { background: #fff; color: var(--f-red); }
+    .reply .status { margin: 0; font-size: .9rem; color: #2e6b3a; font-weight: 600; }
+    .reply .status:empty { display: none; }
+    /* Collection */
+    .collection { display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: center; margin-top: 48px; }
     .collection img { width: 100%; height: auto; display: block; padding: 5px; background: var(--f-paper); border: 1px solid var(--f-gold-light); box-shadow: 0 3px 10px rgba(0,0,0,.18); }
     .collection .cap { color: var(--f-gold); margin: 0; }
-    .collection h2 { font-family: var(--font-heading); font-size: 2rem; line-height: 1.15; color: var(--f-navy); margin: 4px 0 0; }
-    .collection .rule { width: 56px; height: 2px; background: var(--f-gold); margin: 10px 0 12px; }
-    .collection p { margin: 0 0 12px; }
-    .collection p:last-child { margin-bottom: 0; }
-    .collection .hosts .cap { color: var(--f-muted); margin-right: 6px; }
-    .thanks { max-width: 640px; margin: 28px auto 0; text-align: center; font-style: italic; color: var(--f-muted); font-size: .95rem; }
-    .service { margin-top: 44px; }
-    .service h2 { display: flex; align-items: center; gap: 16px; font-family: var(--font-heading); font-size: 1.6rem; color: var(--f-navy); margin: 0 0 14px; text-align: center; }
+    .collection h2 { font-family: var(--font-heading); font-size: 2.1rem; line-height: 1.1; color: var(--f-navy); margin: 4px 0 14px; }
+    .hosts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 0 0 16px; padding: 10px 14px; background: var(--f-cream); border-left: 3px solid var(--f-gold); }
+    .hosts .cap { color: var(--f-muted); }
+    .hosts strong { color: var(--f-navy); }
+    .lead { font-family: var(--font-heading); font-size: 1.3rem; line-height: 1.35; color: var(--f-navy); margin: 0 0 12px; }
+    .collection p.body { margin: 0; }
+    .collection p.thanks { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--f-line); font-size: .92rem; font-style: italic; color: var(--f-muted); }
+
+    /* Service: numbers first, full record one tap away. */
+    .service { margin-top: 48px; }
+    .service h2 { display: flex; align-items: center; gap: 14px; font-family: var(--font-heading); font-size: 1.65rem; color: var(--f-navy); margin: 0 0 18px; text-align: center; }
     .service h2::before, .service h2::after { content: ""; flex: 1; height: 1px; background: var(--f-gold); }
-    /* Both lists share one row grid (subgrid), so bullet n sits level with bullet n across columns. */
-    .service .cols { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(6, auto); column-gap: 40px; }
-    .service .cols > div { display: grid; grid-row: 1 / span 6; grid-template-rows: subgrid; }
-    .service .cols ul { display: contents; }
-    .nw { white-space: nowrap; }
-    .service h3 { color: var(--f-navy); margin: 0; padding-bottom: 8px; border-bottom: 2px solid var(--f-gold); }
-    .service ul { list-style: none; margin: 0; padding: 0; }
-    .service li { position: relative; padding: 9px 0 9px 16px; border-bottom: 1px solid #ece4d0; font-size: .95rem; }
-    .service li::before { content: ""; position: absolute; left: 0; top: calc(9px + .6em); width: 6px; height: 6px; background: var(--f-gold); }
-    .rsvp { margin-top: 32px; background: var(--f-paper); border: 1px solid var(--f-gold-light); border-top: 3px solid var(--f-red); padding: 20px 24px; }
-    .rsvp h2 { font-family: var(--font-heading); font-size: 1.7rem; color: var(--f-red); margin: 0 0 6px; }
-    .rsvp p { margin: 2px 0; }
-    .rsvp a { color: var(--f-navy); }
-    .rsvp .limited { font-style: italic; color: var(--f-muted); font-size: .92rem; }
-    .closing { text-align: center; margin-top: 30px; }
-    .closing .tagline { font-family: var(--font-heading); font-style: italic; font-size: 1.3rem; color: var(--f-navy); margin: 0 0 16px; }
-    .closing a.btn { display: inline-block; padding: 10px 18px; border: 2px solid var(--f-navy); color: var(--f-navy); text-decoration: none; font-weight: 600; }
+    .endorsed { margin: -6px auto 18px; max-width: 560px; text-align: center; color: var(--f-muted); font-size: .95rem; text-wrap: balance; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .stat { background: var(--f-cream); border-radius: 10px; padding: 14px 10px; text-align: center; }
+    .stat b { display: block; font-family: var(--font-heading); font-size: 2.1rem; line-height: 1; color: var(--f-navy); }
+    .stat span { display: block; margin-top: 6px; font-size: .82rem; color: var(--f-muted); line-height: 1.3; }
+    .roles { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+    .roles li { padding: 10px 0 10px 14px; border-left: 3px solid var(--f-gold); }
+    .roles b { display: block; color: var(--f-navy); }
+    .roles span { color: var(--f-muted); font-size: .9rem; }
+    details.record { margin-top: 16px; border-top: 1px solid var(--f-line); }
+    details.record summary { cursor: pointer; list-style: none; padding: 14px 0; text-align: center; font-weight: 600; color: var(--f-navy); }
+    details.record summary::-webkit-details-marker { display: none; }
+    details.record summary::after { content: " +"; color: var(--f-gold); }
+    details.record[open] summary::after { content: " −"; }
+    .cols { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; }
+    .cols h3 { color: var(--f-navy); margin: 0; padding-bottom: 6px; border-bottom: 2px solid var(--f-gold); }
+    .cols ul { list-style: none; margin: 0 0 12px; padding: 0; }
+    .cols li { position: relative; padding: 8px 0 8px 16px; border-bottom: 1px solid #ece4d0; font-size: .93rem; }
+    .cols li::before { content: ""; position: absolute; left: 0; top: calc(8px + .6em); width: 6px; height: 6px; background: var(--f-gold); }
+
+    .closing { text-align: center; margin: 20px 0 36px; }
+    .closing .tagline { font-family: var(--font-heading); font-style: italic; font-size: 1.35rem; color: var(--f-navy); margin: 0 0 18px; text-wrap: balance; }
+    .closing a.dl { display: inline-block; font-size: .95rem; padding: 10px 18px; border: 2px solid var(--f-navy); border-radius: 8px; color: var(--f-navy); text-decoration: none; font-weight: 600; }
+
+    @media (max-width: 360px) {
+      .when { gap: 12px; } .tile { width: 58px; } .when .big { font-size: 1.15rem; }
+    }
     @media (max-width: 640px) {
-      .ev-hero h1 { font-size: 2rem; } .ev-hero .name { font-size: 2.5rem; }
-      .facts .row, .collection { grid-template-columns: 1fr; }
-      .service .cols { display: block; }
-      .service .cols > div { display: block; margin-bottom: 10px; }
-      .service .cols ul { display: block; }
-      .facts .cell + .cell { border-left: 0; border-top: 1px solid #e6dcc4; }
-      .collection img { max-width: 200px; margin: 0 auto; }
+      .reply { padding: 32px 16px 36px; }
+      .reply-in { grid-template-columns: 1fr; }
+      .reply h2 { font-size: 1.75rem; }
+      .when .big { font-size: 1.3rem; }
+      .when .sep, .who .sep { display: none; } .when .small .nw, .who .mail { display: block; }
+      .ev-hero { padding-bottom: 76px; }
+      .ev-hero .frame { padding: 20px 12px 24px; }
+      .ev-hero h1 { font-size: 2.15rem; } .ev-hero .name { font-size: 2.6rem; }
+      .details { padding: 16px; }
+      .collection { grid-template-columns: 1fr; gap: 20px; }
+      .collection img { max-width: 220px; margin: 0 auto; }
+      .stat { padding: 12px 6px; } .stat b { font-size: 1.8rem; }
+      .roles, .cols { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body class="ev">
   <header class="ev-hero">
-    <a class="home" href="/">dedinsky4judge.com</a>
-    <p class="cap">An invitation has been extended to you</p>
-    <h1>A Historic Night of Conversation</h1>
-    <p class="for">and support for</p>
-    <p class="name">Paul Dedinsky</p>
-    <p class="cap office">Candidate for Waukesha County Circuit Court Judge</p>
-  </header>
-  <section class="facts">
-    <div class="row">
-      <div class="cell"><p class="cap">Date</p><p class="val">Wednesday, October 7, 2026</p></div>
-      <div class="cell"><p class="cap">Time</p><p class="val">5:30 – 8:00 PM</p><p class="sub">Speaker remarks at <span class="nw">6:15 PM</span></p></div>
-      <div class="cell"><p class="cap">Place</p><p class="val">The Lincoln Room</p><p class="sub"><a href="https://maps.google.com/?q=440+Wells+St,+Delafield,+WI+53018">440 Wells St., <span class="nw">Delafield, WI 53018</span></a></p></div>
+    <div class="frame">
+      <a class="home" href="/">dedinsky4judge.com</a>
+      <p class="kicker">An invitation has been extended to you</p>
+      <div class="ornament" aria-hidden="true"><span></span></div>
+      <h1>A Historic Night of Conversation</h1>
+      <p class="for">and support for</p>
+      <p class="name">Paul Dedinsky</p>
+      <p class="office">Candidate for Waukesha County Circuit Court Judge</p>
     </div>
-  </section>
-  <p class="note"><b>Food and drinks provided.</b> Event is on the lower level; check-in and registration near the elevator (follow signage).</p>
-  <main class="ev-body">
+  </header>
+
+  <main>
+  <div class="wrap">
+    <section class="details" aria-label="Event details">
+      <div class="when">
+        <div class="tile" aria-hidden="true"><div class="m">OCT</div><div class="d">7</div></div>
+        <div>
+          <p class="big">Wednesday, <span class="nw">October 7, 2026</span></p>
+          <p class="small"><span class="nw">5:30 – 8:00 PM</span><span class="sep"> · </span><span class="nw">Speaker remarks at 6:15 PM</span></p>
+        </div>
+      </div>
+      <ul class="facts">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <div><p class="t">The Lincoln Room</p><p class="s"><a href="https://maps.google.com/?q=440+Wells+St,+Delafield,+WI+53018">440 Wells St., <span class="nw">Delafield, WI 53018</span></a></p></div>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v7a3 3 0 0 0 3 3v8M7 3v6M10 3v7a3 3 0 0 1-3 3"/><path d="M17 21V3c-2 1-3.5 3.5-3.5 7s1.5 4 3.5 4"/></svg>
+          <div><p class="t">Food and drinks provided</p></div>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h5v5h5v5h5v5h3"/><path d="M14 4l5 5M19 5v4h-4"/></svg>
+          <div><p class="t">Event is on the lower level</p><p class="s">Check-in and registration near the elevator (follow signage).</p></div>
+        </li>
+      </ul>
+      <div class="rsvp top">
+        <a class="go" data-touch-href="mailto:lbadura@mac.com?subject=RSVP%3A%20October%207%2C%20Lincoln%20Room" href="#rsvp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          Confirm your presence via email
+        </a>
+      </div>
+    </section>
+
     <section class="collection">
       <img src="/img/events/lincoln-portrait.jpg" width="600" height="849" alt="Portrait of Abraham Lincoln from the Lincoln Collection">
       <div>
         <p class="cap">A uniquely historic setting</p>
         <h2>The Lincoln Collection</h2>
-        <div class="rule"></div>
-        <p class="hosts"><span class="cap">Hosted by</span> <strong>Lauri McHugh Badura &amp; Lou Kowieski</strong></p>
-        <p>Gather among original Lincoln-period paintings, rare portraits, sculpture, flags, documents and Civil War-era artifacts.</p>
-        <p>This extraordinary private collection, curated and made accessible by local entrepreneur Bob Lang, creates an intimate setting for an evening devoted to public service, justice and American history.</p>
+        <p class="hosts"><span class="cap">Hosted by</span> <strong><span class="nw">Lauri McHugh Badura</span> &amp; <span class="nw">Lou Kowieski</span></strong></p>
+        <p class="lead">Gather among original Lincoln-period paintings, rare portraits, sculpture, flags, documents and <span class="nw">Civil War-era</span> artifacts.</p>
+        <p class="body">This extraordinary private collection, curated and made accessible by local entrepreneur <strong>Bob Lang</strong>, creates an intimate setting for an evening devoted to public service, justice and American history.</p>
+        <p class="thanks">Special thanks to Bob Lang for making his private collection and space available for this event.</p>
       </div>
     </section>
-    <p class="thanks">Paul Dedinsky has received the endorsement of many notable elected officials, community leaders, and organizations. Special thanks to Bob Lang for making his private collection and space available for this event.</p>
 
     <section class="service">
       <h2>Paul's Service to Wisconsin's Justice System</h2>
-      <div class="cols">
-        <div>
-          <h3 class="cap">Career experience</h3>
-          <ul>
-            <li>25-year State Prosecutor with 30+ years of legal experience</li>
-            <li>Appellate prosecutor handling homicide and sexual-assault matters</li>
-            <li>Litigated 50+ jury trials and 100+ court trials</li>
-            <li>Directed the DA's Domestic Violence Unit, <span class="nw">2001–2007</span></li>
-            <li>Sexual Assault Prosecutor, <span class="nw">1999–2001</span>; reviewed thousands of investigations</li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="cap">Leadership, education &amp; service</h3>
-          <ul>
-            <li>Milwaukee County Circuit Court Judge, <span class="nw">2019–2020</span></li>
-            <li>Chief Legal Counsel, Wisconsin DATCP, <span class="nw">2017–2018</span></li>
-            <li>J.D., UW-Madison (1993); Ph.D., Education &amp; Leadership (2012)</li>
-            <li>Taught at Marquette Law and Cardinal Stritch; trained police statewide</li>
-            <li>Author/editor, Wisconsin Domestic Violence Prosecution Manual; longtime civic, faith and legal-community service</li>
-          </ul>
-        </div>
+      <p class="endorsed">Paul Dedinsky has received the endorsement of many notable elected officials, community leaders, and organizations.</p>
+      <div class="stats">
+        <div class="stat"><b>25</b><span>years as a State Prosecutor</span></div>
+        <div class="stat"><b>30+</b><span>years of legal experience</span></div>
+        <div class="stat"><b>150+</b><span>trials</span></div>
       </div>
-    </section>
-
-    <section class="rsvp">
-      <h2>Confirm your presence via email</h2>
-      <p><strong>RSVP:</strong> Lauri McHugh Badura · <a href="mailto:lbadura@mac.com">lbadura@mac.com</a></p>
-      <p class="limited">Reservations are limited – please confirm your presence today.</p>
+      <ul class="roles">
+        <li><b>Milwaukee County Circuit Court Judge</b><span>2019–2020</span></li>
+        <li><b>Chief Legal Counsel, Wisconsin DATCP</b><span>2017–2018</span></li>
+        <li><b>Directed the DA's Domestic Violence Unit</b><span>2001–2007</span></li>
+        <li><b>J.D., UW-Madison (1993)</b><span>Ph.D., Education &amp; Leadership (2012)</span></li>
+      </ul>
+      <details class="record">
+        <summary>Full record</summary>
+        <div class="cols">
+          <div>
+            <h3 class="cap">Career experience</h3>
+            <ul>
+              <li>25-year State Prosecutor with 30+ years of legal experience</li>
+              <li>Appellate prosecutor handling homicide and sexual-assault matters</li>
+              <li>Litigated 50+ jury trials and 100+ court trials</li>
+              <li>Directed the DA's Domestic Violence Unit, <span class="nw">2001–2007</span></li>
+              <li>Sexual Assault Prosecutor, <span class="nw">1999–2001</span>; reviewed thousands of investigations</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="cap">Leadership, education &amp; service</h3>
+            <ul>
+              <li>Milwaukee County Circuit Court Judge, <span class="nw">2019–2020</span></li>
+              <li>Chief Legal Counsel, Wisconsin DATCP, <span class="nw">2017–2018</span></li>
+              <li>J.D., UW-Madison (1993); Ph.D., Education &amp; Leadership (2012)</li>
+              <li>Taught at Marquette Law and Cardinal Stritch; trained police statewide</li>
+              <li>Author/editor, Wisconsin Domestic Violence Prosecution Manual; longtime civic, faith and legal-community service</li>
+            </ul>
+          </div>
+        </div>
+      </details>
     </section>
 
     <div class="closing">
       <p class="tagline">Experience, integrity and a deep commitment to justice and community safety.</p>
-      <a class="btn" href="/events/lincoln-flyer.pdf">Download the printable flyer (PDF)</a>
+      <a class="dl" href="/events/lincoln-flyer.pdf">Download the printable flyer (PDF)</a>
     </div>
+  </div>
+
+  <section class="reply" id="rsvp" aria-labelledby="reply-h">
+    <div class="reply-in">
+      <div class="reply-text">
+        <h2 id="reply-h">Confirm your presence via email</h2>
+        <p class="who"><strong>RSVP:</strong> Lauri McHugh Badura</p>
+        <p class="limited">Reservations are limited – please confirm your presence today.</p>
+      </div>
+      <div class="reply-do">
+        <div class="field"><span id="addr">lbadura@mac.com</span><button class="copy" type="button" aria-label="Copy email address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>Copy</span></button></div>
+        <a class="mailbtn" href="mailto:lbadura@mac.com?subject=RSVP%3A%20October%207%2C%20Lincoln%20Room"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span class="l-touch">Email Lauri</span><span class="l-mouse">Open email app</span></a>
+        <p class="status" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
   </main>
+
   <footer class="site-footer">
-    <span class="paid-for">Authorized and paid for by Paul Dedinsky for Judge | Lane Ruhland, Treasurer</span>
+    <span class="paid-for"><span class="pf">Authorized and paid for by</span> <span class="pf">Paul Dedinsky for Judge<span class="pf-bar"> |</span></span> <span class="pf">Lane Ruhland, Treasurer</span></span>
     <address class="mailing-address">Paul Dedinsky for Judge<br>
       PO Box 180051<br>
       Delafield, WI 53018</address>
     <a href="/">dedinsky4judge.com</a> · <a href="/privacy">Privacy</a>
   </footer>
+  <script src="/js/event-rsvp.js"></script>
 </body>
 
 </html>
