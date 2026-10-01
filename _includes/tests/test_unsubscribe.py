@@ -464,6 +464,18 @@ def test_s14_3_1_notices_preserve_control_positions_and_lifecycle() -> None:
         browser.assert_no_remote_requests()
 
 
+def test_s14_3_1_active_notice_is_an_overlay() -> None:
+    """S14.3.1: an active notice uses overlay positioning."""
+    with _UnsubscribeBrowser() as browser:
+        browser.load(390, 844)
+        browser.state("success")
+        position = browser.tools.evaluate(
+            "getComputedStyle(document.querySelector('[data-fs-notice=\"success\"]')).position"
+        )
+        assert position == "absolute"
+        browser.assert_no_remote_requests()
+
+
 def test_s14_3_1_notice_slot_clears_header_aligns_form_and_preserves_controls() -> None:
     """S14.3.1: the notice slot is clear of the header and leaves the form geometry stable."""
     viewports = (
@@ -492,6 +504,22 @@ def test_s14_3_1_notice_slot_clears_header_aligns_form_and_preserves_controls() 
                         assert abs(measured[control][coordinate] - idle[control][coordinate]) <= 1, (
                             width, height, state, control, coordinate, idle, measured
                         )
+        browser.assert_no_remote_requests()
+
+
+def test_s14_3_2_compact_unsubscribe_layout() -> None:
+    """S14.3.2: phone geometry is compact and the short laptop viewport needs no scroll."""
+    with _UnsubscribeBrowser() as browser:
+        for width, height in ((390, 844), (402, 874)):
+            browser.load(width, height)
+            idle = browser.state("idle")
+            assert idle["header"]["height"] <= height * 0.25, (width, height, idle)
+            assert idle["field"]["y"] <= height * 0.5, (width, height, idle)
+
+        browser.load(1366, 600)
+        laptop = browser.state("idle")
+        assert laptop["field"]["y"] >= 0, laptop
+        assert laptop["field"]["bottom"] <= 600, laptop
         browser.assert_no_remote_requests()
 
 

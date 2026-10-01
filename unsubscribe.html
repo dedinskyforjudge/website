@@ -12,6 +12,36 @@
   <link rel="stylesheet" href="/css/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
   <style>
+    /* This unlisted page has no shared navigation, so its header and form can be
+       intentionally tighter without changing the campaign's shared page layout. */
+    .unsubscribe-page .page-header {
+      padding: 20px 20px 18px;
+    }
+
+    .unsubscribe-page .unsubscribe-home {
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .unsubscribe-page .page-header h1 {
+      font-size: 34px;
+      margin-bottom: 4px;
+    }
+
+    .unsubscribe-page .page-header p {
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .unsubscribe-page .page-header .accent-bar {
+      margin-top: 10px;
+    }
+
+    .unsubscribe-page .unsubscribe-section {
+      align-items: flex-start;
+      padding: 28px 20px;
+    }
+
     .unsubscribe-page .unsubscribe-notice {
       display: none;
     }
@@ -80,6 +110,12 @@
     .unsubscribe-page .unsubscribe-notice-region {
       min-height: 80px;
       position: relative;
+    }
+
+    @media (max-width: 640px) {
+      .unsubscribe-page .unsubscribe-section {
+        padding: 24px 20px;
+      }
     }
   </style>
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
@@ -156,7 +192,13 @@
   </main>
 
   <footer class="site-footer">
+    <div class="site-footer-logo-wrap"><img src="/img/logo.svg" alt="Dedinsky for Judge" width="1056" height="816"
+        class="site-footer-logo"></div>
     <span class="paid-for"><span class="pf">Authorized and paid for by</span> <span class="pf">Paul Dedinsky for Judge<span class="pf-bar"> |</span></span> <span class="pf">Lane Ruhland, Treasurer</span></span>
+    <address class="mailing-address">Paul Dedinsky for Judge<br>
+      PO Box 180051<br>
+      Delafield, WI 53018</address>
+    &copy; 2026 All rights reserved. · <a href="/privacy">Privacy</a>
   </footer>
 
   <script src="/js/unsubscribe-form.js"></script>
