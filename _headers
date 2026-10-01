@@ -78,3 +78,8 @@
 # already covers the direct .html request.
 /events/lincoln
   Cache-Control: public, max-age=0, must-revalidate
+
+# Unlisted unsubscribe page (SPEC S14). The direct .html request is covered
+# by the rule above; list the served extensionless route explicitly.
+/unsubscribe
+  Cache-Control: public, max-age=0, must-revalidate

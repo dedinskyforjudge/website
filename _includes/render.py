@@ -26,6 +26,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 INCLUDES = ROOT / "_includes"
 PARTIAL_NAMES = ("nav", "footer")
+TOP_LEVEL_PAGES = (
+    "index.html",
+    "about.html",
+    "vote.html",
+    "endorsements.html",
+    "support.html",
+    "donate.html",
+    "privacy.html",
+    "404.html",
+)
 MARKER = re.compile(
     r"(?P<open><!-- include:(?P<name>[a-z]+) -->\n)"
     r"(?P<body>.*?)"
@@ -176,7 +186,7 @@ def report_invalid(invalid: dict[str, list[str]]) -> None:
 
 def main(argv: list[str]) -> int:
     check = "--check" in argv
-    pages = sorted(ROOT.glob("*.html"))
+    pages = sorted(ROOT / name for name in TOP_LEVEL_PAGES)
     sources = {page: page.read_text(encoding="utf-8") for page in pages}
     invalid = {page.name: errors for page, source in sources.items() if (errors := validate(source))}
     if invalid:

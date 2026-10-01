@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unsubscribe — Dedinsky for Judge</title>
+  <meta name="description" content="Remove an email address from future Dedinsky for Judge campaign mailings.">
+  <meta name="robots" content="noindex">
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/work-sans-normal-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/cormorant-garamond-normal-latin.woff2" crossorigin>
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .unsubscribe-page .unsubscribe-notice {
+      display: none;
+    }
+
+    .unsubscribe-page .unsubscribe-notice:has([data-fs-active]) {
+      display: block;
+      bottom: calc(100% + 12px);
+      left: 0;
+      position: absolute;
+      width: min(100%, 520px);
+      z-index: 1;
+    }
+
+    .unsubscribe-page .unsubscribe-notice .form-success,
+    .unsubscribe-page .unsubscribe-notice .form-error {
+      margin-bottom: 0;
+      padding-right: 52px;
+    }
+
+    .unsubscribe-page .unsubscribe-notice .form-error {
+      background: var(--white);
+      border: 1px solid var(--red);
+      border-radius: 4px;
+      padding: 16px 52px 16px 20px;
+    }
+
+    .unsubscribe-page .unsubscribe-notice-close {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      cursor: pointer;
+      display: none;
+      font: inherit;
+      font-weight: 700;
+      padding: 6px;
+      position: absolute;
+      right: 10px;
+      text-decoration: underline;
+      top: 8px;
+    }
+
+    .unsubscribe-page .unsubscribe-notice:has([data-fs-active]) .unsubscribe-notice-close,
+    .unsubscribe-page .unsubscribe-field-feedback:has([data-fs-active]) .unsubscribe-notice-close {
+      display: block;
+    }
+
+    .unsubscribe-page .unsubscribe-field-feedback {
+      align-items: flex-start;
+      display: flex;
+      gap: 6px;
+      min-height: 28px;
+    }
+
+    .unsubscribe-page .unsubscribe-field-feedback .unsubscribe-notice-close {
+      color: var(--red);
+      flex: 0 0 auto;
+      padding: 0;
+      position: static;
+    }
+
+    .unsubscribe-page .unsubscribe-form-shell {
+      position: relative;
+    }
+  </style>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="canonical" href="https://dedinsky4judge.com/unsubscribe">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#1b2a4a">
+  <meta name="apple-mobile-web-app-title" content="Dedinsky for Judge">
+  <meta name="application-name" content="Dedinsky for Judge">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://dedinsky4judge.com/unsubscribe">
+  <meta property="og:site_name" content="Dedinsky for Judge">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="Unsubscribe — Dedinsky for Judge">
+  <meta property="og:description" content="Remove an email address from future Dedinsky for Judge campaign mailings.">
+  <meta property="og:image" content="https://dedinsky4judge.com/img/Paul%20Dedinsky1-social.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Paul Dedinsky for Waukesha County Circuit Court Judge">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Unsubscribe — Dedinsky for Judge">
+  <meta name="twitter:description" content="Remove an email address from future Dedinsky for Judge campaign mailings.">
+  <meta name="twitter:image" content="https://dedinsky4judge.com/img/Paul%20Dedinsky1-social.jpg">
+</head>
+
+<body class="unsubscribe-page">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="page-header">
+    <a class="unsubscribe-home" href="/">Dedinsky for Judge</a>
+    <h1>Unsubscribe</h1>
+    <p>Enter the email address you would like removed from campaign mailings.</p>
+    <div class="accent-bar"></div>
+  </header>
+
+  <main id="main">
+    <section class="section section--light unsubscribe-section">
+      <div class="section-inner unsubscribe-form-shell">
+        <div class="unsubscribe-notice" data-fs-notice="success">
+          <div data-fs-success class="form-success" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">
+            You're unsubscribed.
+          </div>
+          <button type="button" class="unsubscribe-notice-close" data-fs-notice-close aria-label="Close confirmation">Close</button>
+        </div>
+        <div class="unsubscribe-notice" data-fs-notice="form-error">
+          <div data-fs-error class="form-error" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1">
+          </div>
+          <button type="button" class="unsubscribe-notice-close" data-fs-notice-close aria-label="Close error">Close</button>
+        </div>
+
+        <form id="unsubscribe-form" class="support-form unsubscribe-form" action="https://formspree.io/f/moevbzkk" method="POST">
+          <div class="form-row">
+            <label for="email">Email <span class="required">*</span></label>
+            <div class="unsubscribe-controls">
+              <input type="email" id="email" name="email" data-fs-field autocomplete="email"
+                aria-describedby="email-error" required>
+              <button type="submit" data-fs-submit-btn class="btn btn--red">Remove this email</button>
+            </div>
+            <div class="unsubscribe-field-feedback" data-fs-notice="field-error">
+              <span id="email-error" data-fs-error="email" class="field-error" role="alert" aria-live="assertive"
+                aria-atomic="true"></span>
+              <button type="button" class="unsubscribe-notice-close" data-fs-notice-close aria-label="Close email error">Close</button>
+            </div>
+          </div>
+
+          <input type="hidden" name="_subject" value="Unsubscribe request — dedinsky4judge.com">
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span class="paid-for"><span class="pf">Authorized and paid for by</span> <span class="pf">Paul Dedinsky for Judge<span class="pf-bar"> |</span></span> <span class="pf">Lane Ruhland, Treasurer</span></span>
+  </footer>
+
+  <script src="/js/unsubscribe-form.js"></script>
+  <script src="/js/formspree-ajax-1.1.5.js" defer></script>
+</body>
+
+</html>

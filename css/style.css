@@ -816,6 +816,80 @@ body.is-scrolled .page-header {
   gap: 18px;
 }
 
+/* Unlisted Formspree forms use the same controls and feedback treatment as
+   Support, while their page header has no fixed shared navigation above it. */
+.unsubscribe-page .page-header {
+  margin-top: 0;
+}
+
+.unsubscribe-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.unsubscribe-page main {
+  display: flex;
+  flex: 1;
+}
+
+.unsubscribe-section {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  padding: 48px 24px;
+}
+
+.unsubscribe-form-shell {
+  margin: 0 auto;
+  max-width: 560px;
+  width: 100%;
+}
+
+.unsubscribe-form {
+  gap: 0;
+}
+
+.unsubscribe-controls {
+  align-items: stretch;
+  display: flex;
+  gap: 12px;
+}
+
+.unsubscribe-controls input {
+  flex: 1 1 auto;
+  height: 52px;
+  min-width: 0;
+}
+
+.unsubscribe-form .unsubscribe-controls button[type="submit"] {
+  align-self: stretch;
+  height: 52px;
+  margin-top: 0;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+
+.unsubscribe-home {
+  color: var(--white);
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 22px;
+  position: relative;
+  text-decoration: none;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.unsubscribe-home:hover,
+.unsubscribe-home:focus {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .form-row {
   display: flex;
   flex-direction: column;
@@ -962,6 +1036,20 @@ body.is-scrolled .page-header {
 /* Spam honeypot — hidden from humans, tempting to bots */
 .support-form input[name="_gotcha"] {
   display: none;
+}
+
+@media (max-width: 640px) {
+  .unsubscribe-section {
+    padding: 40px 20px;
+  }
+
+  .unsubscribe-controls {
+    flex-direction: column;
+  }
+
+  .unsubscribe-form .unsubscribe-controls button[type="submit"] {
+    width: 100%;
+  }
 }
 
 /* Endorsements */

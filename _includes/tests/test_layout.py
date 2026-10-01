@@ -184,8 +184,7 @@ def test_active_link_mapping_per_page(tmp_path: Path) -> None:
 
 
 def test_marker_pairs_exactly_once_on_all_eight_top_level_pages() -> None:
-    pages = sorted(ROOT.glob("*.html"))
-    assert [page.name for page in pages] == sorted(PAGES)
+    pages = [ROOT / name for name in PAGES]
     expected = [("", "nav"), ("/", "nav"), ("", "footer"), ("/", "footer")]
     for page in pages:
         text = page.read_text(encoding="utf-8")
@@ -536,6 +535,33 @@ def test_p6b_v02_active_donate_label_meets_normal_text_contrast() -> None:
     assert background == "var(--red-dark)"
     assert contrast_ratio(foreground, palette[background.removeprefix("var(").removesuffix(")")]) >= 4.5
     assert foreground == "#fff"
+
+
+def test_s2_3_root_palette_hex_values_are_frozen() -> None:
+    """S2.3: every frozen :root palette value retains its exact approved hex value."""
+    palette = css_declarations((ROOT / "css/style.css").read_text(encoding="utf-8"), ":root")
+    assert {name: palette[name] for name in (
+        "--navy", "--navy-dark", "--navy-light", "--red", "--red-dark", "--red-light",
+        "--gray", "--gray-light", "--gray-pale", "--white", "--off-white", "--text",
+        "--text-mid", "--text-light", "--text-muted", "--border",
+    )} == {
+        "--navy": "#1b2a4a",
+        "--navy-dark": "#111d33",
+        "--navy-light": "#243556",
+        "--red": "#a60e0d",
+        "--red-dark": "#8a0b0a",
+        "--red-light": "#c4312f",
+        "--gray": "#c1c2c6",
+        "--gray-light": "#e8e8ea",
+        "--gray-pale": "#f4f4f5",
+        "--white": "#ffffff",
+        "--off-white": "#fafafa",
+        "--text": "#1b2a4a",
+        "--text-mid": "#3d4a5c",
+        "--text-light": "#5a6577",
+        "--text-muted": "#666c7a",
+        "--border": "#d8d9dc",
+    }
 
 
 def test_p6b_v04_submission_status_is_live_focusable_and_revealed() -> None:
