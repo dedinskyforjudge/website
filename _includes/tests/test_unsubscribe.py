@@ -218,11 +218,11 @@ class _UnsubscribeBrowser:
         self.server.shutdown()
         self.server.server_close()
 
-    def load(self, width: int) -> None:
+    def load(self, width: int, height: int = 900) -> None:
         self.tools.call(
             "Emulation.setDeviceMetricsOverride",
             width=width,
-            height=900,
+            height=height,
             deviceScaleFactor=1,
             mobile=False,
         )
@@ -234,6 +234,26 @@ class _UnsubscribeBrowser:
 
     def assert_no_remote_requests(self) -> None:
         assert not self.tools.remote_requests, self.tools.remote_requests
+
+    def submit_completed_local_success(self) -> dict[str, object]:
+        """Submit a populated form against a browser-local successful response."""
+        return self.tools.evaluate('''new Promise(resolve => {
+          const form = document.querySelector('#unsubscribe-form');
+          const field = document.querySelector('#email');
+          window.fetch = () => Promise.resolve(new Response('{"next":"/"}', { status: 200 }));
+          field.value = 'subscriber@example.test';
+          form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+          const started = performance.now();
+          const wait = () => {
+            const active = document.querySelector('[data-fs-success]').hasAttribute('data-fs-active');
+            if (active || performance.now() - started > 2000) {
+              resolve({ active, fieldValue: field.value });
+              return;
+            }
+            setTimeout(wait, 10);
+          };
+          wait();
+        })''')
 
     def state(self, name: str) -> dict[str, dict[str, float]]:
         return self.tools.evaluate(f'''(() => {{
@@ -251,7 +271,7 @@ class _UnsubscribeBrowser:
           if ({name!r} === 'network-failure') {{ formError.textContent = 'Unable to submit. Please try again.'; formError.setAttribute('data-fs-active', ''); }}
           const rect = element => {{ const box = element.getBoundingClientRect(); return {{ x: box.x + window.scrollX, y: box.y + window.scrollY, width: box.width, height: box.height, right: box.right + window.scrollX, bottom: box.bottom + window.scrollY }}; }};
           const selector = {{ success: '[data-fs-notice="success"]', 'form-error': '[data-fs-notice="form-error"]', 'network-failure': '[data-fs-notice="form-error"]' }}[{name!r}];
-          return {{ form: rect(form), field: rect(document.querySelector('#email')), button: rect(document.querySelector('[data-fs-submit-btn]')), notice: selector ? rect(document.querySelector(selector)) : null }};
+          return {{ header: rect(document.querySelector('.page-header')), form: rect(form), field: rect(document.querySelector('#email')), button: rect(document.querySelector('[data-fs-submit-btn]')), notice: selector ? rect(document.querySelector(selector)) : null }};
         }})()''')
 
 
@@ -365,6 +385,13 @@ def test_s14_3_feedback_regions_and_focus_behavior() -> None:
     sdk = (ROOT / "js" / "formspree-ajax-1.1.5.js").read_text(encoding="utf-8")
     assert "C(e.form)?e.form.reset()" in sdk
 
+    with _UnsubscribeBrowser() as browser:
+        browser.load(390, 844)
+        completed = browser.submit_completed_local_success()
+        assert completed["active"] is True
+        assert completed["fieldValue"] == ""
+        browser.assert_no_remote_requests()
+
 
 def test_s14_3_1_notices_preserve_control_positions_and_lifecycle() -> None:
     """S14.3.1: notices overlay without shifting controls and follow the required lifetime."""
@@ -437,19 +464,34 @@ def test_s14_3_1_notices_preserve_control_positions_and_lifecycle() -> None:
         browser.assert_no_remote_requests()
 
 
-def test_s14_3_1_notices_sit_directly_above_the_form_without_overlap() -> None:
-    """S14.3.1: active success and form-error notices occupy only the space above the form."""
+def test_s14_3_1_notice_slot_clears_header_aligns_form_and_preserves_controls() -> None:
+    """S14.3.1: the notice slot is clear of the header and leaves the form geometry stable."""
+    viewports = (
+        (320, 480), (320, 600), (360, 640), (375, 667), (390, 844),
+        (402, 874), (414, 896), (480, 720), (640, 480), (768, 480),
+        (768, 1024), (1024, 480), (1024, 768), (1280, 720), (1366, 600),
+        (1440, 900), (1536, 864), (1600, 900), (1920, 1080), (1920, 1200),
+    )
     with _UnsubscribeBrowser() as browser:
-        for width in (402, 1536):
-            browser.load(width)
-            for state in ("success", "form-error", "network-failure"):
+        for width, height in viewports:
+            browser.load(width, height)
+            idle = browser.state("idle")
+            for state in ("success", "form-error"):
                 measured = browser.state(state)
                 notice = measured["notice"]
                 assert notice is not None, (width, state, measured)
                 assert notice["height"] > 0, (width, state, measured)
-                assert 0 <= measured["form"]["y"] - notice["bottom"] <= 13, (width, state, measured)
+                assert notice["y"] >= measured["header"]["bottom"], (width, height, state, measured)
+                assert notice["bottom"] <= measured["form"]["y"], (width, height, state, measured)
+                for edge in ("x", "right"):
+                    assert abs(notice[edge] - measured["form"][edge]) <= 1, (
+                        width, height, state, edge, measured
+                    )
                 for control in ("field", "button"):
-                    assert notice["bottom"] <= measured[control]["y"], (width, state, control, measured)
+                    for coordinate in ("x", "y", "width", "height"):
+                        assert abs(measured[control][coordinate] - idle[control][coordinate]) <= 1, (
+                            width, height, state, control, coordinate, idle, measured
+                        )
         browser.assert_no_remote_requests()
 
 
