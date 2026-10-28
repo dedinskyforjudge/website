@@ -1235,7 +1235,7 @@ EXPECTED_LINKS = {
 
 EXPECTED_IMAGES = {
     "index.html": (("/img/logo.svg", "Dedinsky for Judge"), ("/img/Paul%20Dedinsky1.jpeg", "Paul Dedinsky"), ("/img/logo.svg", "Dedinsky for Judge")),
-    "about.html": (("/img/logo.svg", "Dedinsky for Judge"), ("/img/logo.svg", "Dedinsky for Judge")),
+    "about.html": (("/img/logo.svg", "Dedinsky for Judge"), ("/img/dedinsky-family.jpg", "Paul and Lisa Dedinsky with their family"), ("/img/logo.svg", "Dedinsky for Judge")),
     **{name: (("/img/logo.svg", "Dedinsky for Judge"), ("/img/logo.svg", "Dedinsky for Judge")) for name in PAGES if name not in {"index.html", "about.html"}},
 }
 

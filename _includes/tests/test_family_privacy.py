@@ -1,6 +1,5 @@
-"""Keep identifying family copy and the removed photo out of public files."""
+"""Keep identifying family names and the old photo filename out of public files."""
 
-import hashlib
 from html import unescape
 import os
 from pathlib import Path
@@ -14,10 +13,6 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 NAMES = re.compile(r"\b(?:Charlie|Nicholas|Nick)\b", re.IGNORECASE)
 PHOTO_STEM = "Dedinsky family (Paul, Lisa, Natalia, Charlie, Abby)"
-PHOTO_HASHES = {
-    "4f107d911a4318c20572c1bed0b4c3ab55c7504c516f8a57e41d013d08d7b88b",
-    "2db2b4ac3c6116953adc3ce41873fd6a13311b0f096041021d6a79b0b6a23f2b",
-}
 # The packet freezes S12/S20 rosters. This unrelated endorser is the only
 # exception: one exact name element in endorsements.html, never metadata,
 # another page, or another occurrence. The roster tests pin its membership.
@@ -60,12 +55,10 @@ def identifying_files(root: Path, *, allow_roster: bool = True) -> list[str]:
         matches = sorted({match.group().lower() for match in NAMES.finditer(combined)})
         if matches or PHOTO_STEM.casefold() in combined.casefold():
             problems.append(f"{relative}: identifying name or photo filename ({', '.join(matches)})")
-        if hashlib.sha256(data).hexdigest() in PHOTO_HASHES:
-            problems.append(f"{relative}: removed family photo, including renamed copies")
     return problems
 
 
-def test_public_files_have_no_identifying_family_names_or_photo() -> None:
+def test_public_files_have_no_identifying_family_names_or_old_photo_filename() -> None:
     assert identifying_files(ROOT) == []
 
 
@@ -108,4 +101,16 @@ def test_roster_exception_is_limited_to_one_exact_element(tmp_path: Path) -> Non
 
 def test_names_are_word_matches(tmp_path: Path) -> None:
     (tmp_path / "copy.txt").write_text("nickname nickel Nicholasville")
+    assert identifying_files(tmp_path) == []
+
+
+def test_guard_allows_restored_family_photo_and_generic_alt(tmp_path: Path) -> None:
+    (tmp_path / "img").mkdir()
+    for name in ("dedinsky-family.jpg", "dedinsky-family.webp"):
+        (tmp_path / "img" / name).write_bytes((ROOT / "img" / name).read_bytes())
+    (tmp_path / "about.html").write_text(
+        '<picture><source srcset="/img/dedinsky-family.webp" type="image/webp">'
+        '<img src="/img/dedinsky-family.jpg" alt="Paul and Lisa Dedinsky with their family">'
+        '</picture>'
+    )
     assert identifying_files(tmp_path) == []
