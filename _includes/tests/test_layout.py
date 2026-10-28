@@ -1129,7 +1129,7 @@ CONTENT_TEXTS = {
         "Waukesha County Circuit Court", "for Circuit Court Judge",
         "A career built on experience, integrity, and a deep commitment to justice.",
         "About Paul", "Paul Dedinsky is a 25-year veteran prosecutor who has worked in the criminal justice system for over thirty years. Paul received his law degree from the University of Wisconsin–Madison Law School in 1993, and his Ph.D. in Education and Leadership in 2012.",
-        "Paul has taught law at Marquette University Law School, as well as business law, legal ethics, and business leadership to undergrads and graduate students at Cardinal Stritch. Paul is married to Lisa, and the couple raised their three children — Abby, Charlie, and Natalia — in Delafield, Wisconsin.",
+        "Paul has taught law at Marquette University Law School, as well as business law, legal ethics, and business leadership to undergrads and graduate students at Cardinal Stritch. Paul is married to Lisa, and the couple raised their family in Delafield, Wisconsin.",
         "Governor Walker first appointed Paul as Chief Legal Counsel to the Wisconsin Department of Agriculture, Trade, and Consumer Protection (DATCP) from 2017–2018. Governor Walker then appointed Paul to serve as a circuit court judge (2019–2020). With experience as a judge, as well as a sexual assault and domestic violence prosecutor who worked with hundreds upon hundreds of victims, Paul is acutely aware of the toll of the system upon victims of crime.",
         "30+ years of legal experience", "150+ trials", "25 years as a State Prosecutor",
         "Main author/editor, Wisconsin Domestic Violence Prosecution Manual, 2004",
@@ -1142,7 +1142,7 @@ CONTENT_TEXTS = {
         "25 years as a prosecutor — and a career path twice recognized by Governor Scott Walker, who appointed Paul as Chief Legal Counsel at WI DATCP and later to the circuit court bench.",
         "Paul Dedinsky is a dedicated public servant with a proven commitment to justice and community safety. Paul's extensive experience as a veteran prosecutor and deep understanding of the law have prepared him to serve the people of Waukesha County as a fair and impartial judge.",
         "Paul grew up in southeastern Wisconsin and attended Marquette University High School and Creighton University. He graduated from the University of Wisconsin–Madison Law School in 1993 and earned his Ph.D. in Education and Leadership in 2012.",
-        "Paul is married to Lisa, and the couple raised three children — Abby, Charlie, and Natalia — in Delafield, Wisconsin.",
+        "Paul is married to Lisa, and the couple raised their family in Delafield, Wisconsin.",
         "As a Waukesha County Judge, Paul Dedinsky pledges to ensure the safety of Waukesha County residents, uphold the rule of law, and never legislate from the bench or engage in judicial activism. Paul will continue to serve the community with integrity and firm justice.",
         "Front row seat. As a longtime prosecutor in Milwaukee, Paul saw firsthand how crime and violence can devastate, destabilize, and destroy communities. Paul will stand in the breach and prevent that from happening in Waukesha County.",
         "Paul has a long, proven, conservative track record of holding criminals accountable and keeping families safe. He earned a strong reputation for securing justice for those victimized by crime.",
@@ -1235,7 +1235,7 @@ EXPECTED_LINKS = {
 
 EXPECTED_IMAGES = {
     "index.html": (("/img/logo.svg", "Dedinsky for Judge"), ("/img/Paul%20Dedinsky1.jpeg", "Paul Dedinsky"), ("/img/logo.svg", "Dedinsky for Judge")),
-    "about.html": (("/img/logo.svg", "Dedinsky for Judge"), ("/img/Dedinsky%20family%20%28Paul%2C%20Lisa%2C%20Natalia%2C%20Charlie%2C%20Abby%29.jpeg", "Paul and Lisa Dedinsky with their children Natalia, Charlie, and Abby"), ("/img/logo.svg", "Dedinsky for Judge")),
+    "about.html": (("/img/logo.svg", "Dedinsky for Judge"), ("/img/logo.svg", "Dedinsky for Judge")),
     **{name: (("/img/logo.svg", "Dedinsky for Judge"), ("/img/logo.svg", "Dedinsky for Judge")) for name in PAGES if name not in {"index.html", "about.html"}},
 }
 
